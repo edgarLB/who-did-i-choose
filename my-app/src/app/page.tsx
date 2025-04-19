@@ -71,7 +71,7 @@ export default function Home() {
         localStorage.setItem('playerId', playerData.id);
 
         // Navigate to the lobby page with the created game id
-        router.push(`/lobby/${gameData.game_code}`);
+        router.push(`/games/${gameData.game_code}`);
     }
 
     const joinGame = async (gameCode: string) => {
@@ -105,7 +105,7 @@ export default function Home() {
         localStorage.setItem('playerId', playerData.id);
 
         // Navigate to the lobby page with the found game id
-        router.push(`/lobby/${gameData.game_code}`);
+        router.push(`/games/${gameData.game_code}`);
     }
 
   return (
