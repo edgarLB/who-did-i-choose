@@ -1,14 +1,4 @@
 "use client"
-
-function generateGameCode(length = 6) {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-}
-
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -30,6 +20,29 @@ import {Label} from "@/components/ui/label";
 import {useState} from "react";
 import {supabase} from "@/lib/supabaseClient";
 
+
+/* ----- Utils ----*/
+type Seat = 1 | 2;
+
+function pickSeat(taken: { seat: Seat }[] | null): Seat | null {
+    const occupied = new Set<Seat>((taken ?? []).map(p => p.seat));
+
+    if (!occupied.has(1)) return 1;
+    if (!occupied.has(2)) return 2;
+
+    return null;
+}
+
+function generateGameCode(length = 6) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+/* ---------*/
 
 export default function Home() {
     const [username, setUsername] = useState<string>("");
@@ -58,7 +71,11 @@ export default function Home() {
         // Insert the creator as a player in the players table
         const { data: playerData, error: playerError } = await supabase
           .from('players')
-          .insert({ game_id: gameData.id, screen_name: defaultUsername })
+          .insert({
+              game_id: gameData.id,
+              screen_name: defaultUsername,
+              seat: 1
+          })
           .select()
           .single();
 
@@ -89,15 +106,36 @@ export default function Home() {
           return;
         }
 
+        console.log(gameData.gameId)
+
+        // Check DB to see if game is full
+        const { data: taken } = await supabase
+            .from('players')
+            .select('seat')
+            .eq('game_id', gameData.id);
+
+        // pick the free seat
+        const seat = pickSeat(taken);
+        console.log("Free Seat:", seat )
+
+        if (seat === null) {
+            alert('Lobby full!');
+            return;
+        }
+
         // Insert the joining player into the players table
         const { data: playerData, error: playerError } = await supabase
           .from('players')
-          .insert({ game_id: gameData.id, screen_name: defaultUsername })
+          .insert({
+              game_id: gameData.id,
+              screen_name: defaultUsername,
+              seat: seat,
+          })
           .select()
           .single();
 
         if (playerError) {
-          console.error('Error joining game:', playerError);
+          console.error("Player Error:", playerError);
           return;
         }
 
