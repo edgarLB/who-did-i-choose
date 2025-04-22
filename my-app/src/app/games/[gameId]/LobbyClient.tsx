@@ -1,13 +1,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { getLocalPlayerId } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
-// Load player ID
-const getLocalPlayerId = () =>
-    typeof window !== "undefined" ? localStorage.getItem("playerId") : null;
 
 export default function LobbyClient({gameId, inviteCode} : {gameId: string; inviteCode: string}) {
     const [players, setPlayers] = useState<{ id: string; screen_name: string }[]>(
