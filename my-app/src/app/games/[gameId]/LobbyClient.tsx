@@ -33,7 +33,7 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
             // Player list
             const { data: initialPlayers, error: playersError } = await supabase
                 .from("players")
-                .select("id, screen_name")
+                .select("id, screen_name, chosen_card_id")
                 .eq("game_id", gameId);
 
             if (playersError) {
@@ -128,7 +128,10 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
     };
 
     const chooseDeck = async (id: string) => {
+        // deck already chosen
         if (id == deckId) return;
+
+        // locally update chosen deck
         setDeckId(id);
 
         // new card needs to be picked in new deck
@@ -143,8 +146,35 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
             .eq("id", gameId);
 
         if (error) console.error("Error updating deck:", error);
+
+        // clear any chosen card for all players in game when deck changed
+        await supabase
+            .from("players")
+            .update({
+                chosen_card_id: null
+            })
+            .eq("game_id", gameId)
+
     }
 
+
+    const chooseCard = async (id: string) => {
+        // card already chosen
+        if (id == pickedCardId) return;
+
+        // locally update chosen card
+        setPickedCardId(id);
+
+        // update db with player's card
+        const { error } = await supabase
+            .from("players")
+            .update({
+                chosen_card_id: id,
+            })
+            .eq("id", localPlayerId);
+
+        if (error) console.error("Error picking card:", error);
+    }
     return (
         <div className="flex flex-col items-center justify-center min-h-screen gap-4">
 
@@ -218,7 +248,11 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
             {/* Display Cards */}
             <div className="grid grid-cols-6 gap-2">
                 {cards.map(c => (
-                    <button key={c.id}>
+                    <button
+                        key={c.id}
+                        onClick={() => chooseCard(c.id)}
+                        className={`rounded ${pickedCardId === c.id ? "ring-2 ring-blue-500" : ""}`}
+                    >
                         <img
                             src={getPublicUrl(c.image)}
                             alt={c.name}
