@@ -17,7 +17,7 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
 
     const [deckId, setDeckId] = useState(intialDeckId);
     const [cards, setCards] = useState(intialCards);
-
+    const [pickedCardId, setPickedCardId] = useState<string | null>(null);
     const [players, setPlayers] = useState<{ id: string; screen_name: string }[]>([]);
     const [isEditing, setIsEditing] = useState(false);
     const [tmpName, setTmpName] = useState("");
@@ -26,7 +26,7 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
 
     // Fetch players & subscribe to realtime changes
     useEffect(() => {
-        let channel: ReturnType<typeof supabase.channel> | undefined;
+        let playerChannel: ReturnType<typeof supabase.channel> | undefined;
 
         async function fetchPlayers() {
 
@@ -43,7 +43,7 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
             }
 
             // Subscribe to realtime changes to players
-            channel = supabase
+            playerChannel = supabase
                 .channel(`players-channel-${gameId}`)
                 .on(
                     "postgres_changes",
@@ -73,10 +73,39 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                 .subscribe();
         }
 
+
         fetchPlayers();
 
+        const gameChannel = supabase
+            .channel(`game-channel-${gameId}`)
+            .on(
+                "postgres_changes",
+                {
+                    event: "UPDATE",
+                    schema: "public",
+                    table: "games",
+                    filter: `id=eq.${gameId}`,
+                },
+                async (payload) => {
+                    const newDeckId = payload.new.deck_id as string;
+
+                    // update and clear local deck and pick
+                    setDeckId(newDeckId);
+                    setPickedCardId(null);
+
+                    const { data: newCards } = await supabase
+                        .from("cards")
+                        .select("id, name, image")
+                        .eq("deck_id", newDeckId)
+                        .order("name")
+
+                    setCards(newCards ?? []);
+                }
+            ) .subscribe();
+
         return () => {
-            if (channel) supabase.removeChannel(channel);
+            if (playerChannel) supabase.removeChannel(playerChannel);
+            if (gameChannel) supabase.removeChannel(gameChannel);
         };
     }, [gameId]);
 
@@ -98,36 +127,31 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
         }
     };
 
+    const chooseDeck = async (id: string) => {
+        if (id == deckId) return;
+        setDeckId(id);
+
+        // new card needs to be picked in new deck
+        setPickedCardId(null);
+
+        // update game in db so all players get a realtime update
+        const { error } = await supabase
+            .from("games")
+            .update({
+                deck_id: id,
+            })
+            .eq("id", gameId);
+
+        if (error) console.error("Error updating deck:", error);
+    }
+
     return (
         <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-            <h3 className="font-semibold">Choose a deck</h3>
 
-            {/* Display Decks */}
-            <div className="grid grid-cols-3 gap-4">
-                {decks.map(d => (
-                    <button key={d.id}>
-                        <img
-                            src={getPublicUrl(d.cover_image)}
-                             alt={d.name}
-                        />
-                    </button>
-                ))}
-            </div>
-
-            {/* Display Cards */}
-            <div className="grid grid-cols-6 gap-2">
-                {cards.map(c => (
-                    <button key={c.id}>
-                        <img
-                            src={getPublicUrl(c.image)}
-                            alt={c.name}
-                        />
-                    </button>
-                ))}
-            </div>
             <h1 className="text-2xl font-bold">Lobby</h1>
             <h2 className="text-lg">Invite Code: {inviteCode}</h2>
 
+            {/* Display Players List */}
             <p className="font-semibold">Players:</p>
             <ul className="space-y-1">
                 {players.map((player) => (
@@ -168,10 +192,40 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                     </li>
                 ))}
             </ul>
-
             {playerCount < 2 ? (
                 <p>Waiting for the other player…</p>
             ) : null}
+
+
+            {/* Display Decks */}
+            <p className="font-semibold">Choose a Deck:</p>
+            <div className="grid grid-cols-3 gap-4">
+                {decks.map(d => (
+                    <button
+                        key={d.id}
+                        onClick={() => chooseDeck(d.id)}
+                        className={`rounded p-1 ${d.id === deckId ? "ring-2 ring-green-500" : ""}`}
+
+                    >
+                        <img
+                            src={getPublicUrl(d.cover_image)}
+                            alt={d.name}
+                        />
+                    </button>
+                ))}
+            </div>
+
+            {/* Display Cards */}
+            <div className="grid grid-cols-6 gap-2">
+                {cards.map(c => (
+                    <button key={c.id}>
+                        <img
+                            src={getPublicUrl(c.image)}
+                            alt={c.name}
+                        />
+                    </button>
+                ))}
+            </div>
 
             <Button disabled={playerCount < 2}>Start Game</Button>
         </div>
