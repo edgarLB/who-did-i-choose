@@ -32,6 +32,25 @@ export default async function LobbyPage({ params }: { params: { gameId: string }
         notFound();
     }
 
+    // Query to get decks
+    const { data:decks } = await supabase
+        .from('decks')
+        .select('id, name, cover_image, scope')
+
+    // console.log(`Decks ${decks?.length}`)
+
+    // Query to get the cards for the currently selected deck
+    const { data: cards } = await supabase
+        .from('cards')
+        .select('id,name,image')
+        .eq('deck_id', game.deck_id)
+        .order('name')
+
     // Game found
-    return <LobbyClient gameId={game.id} inviteCode={game.game_code} />;
+    return <LobbyClient gameId={game.id}
+                        inviteCode={game.game_code}
+                        deckId={game.deck_id}
+                        decks={decks ?? []}
+                        cards={cards ?? []}
+    />;
 }

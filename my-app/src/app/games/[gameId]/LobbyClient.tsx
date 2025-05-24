@@ -4,12 +4,21 @@ import { Input } from "@/components/ui/input";
 import { getLocalPlayerId } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { Deck, Card } from "@/types";
+import {getPublicUrl} from "@/lib/getPublicUrl";
 
+export default function LobbyClient({gameId, inviteCode, decks, deckId : intialDeckId, cards : intialCards} : {
+    gameId: string;
+    inviteCode: string
+    decks: Deck[];
+    deckId: string;
+    cards: Card[];
+}) {
 
-export default function LobbyClient({gameId, inviteCode} : {gameId: string; inviteCode: string}) {
-    const [players, setPlayers] = useState<{ id: string; screen_name: string }[]>(
-        []
-    );
+    const [deckId, setDeckId] = useState(intialDeckId);
+    const [cards, setCards] = useState(intialCards);
+
+    const [players, setPlayers] = useState<{ id: string; screen_name: string }[]>([]);
     const [isEditing, setIsEditing] = useState(false);
     const [tmpName, setTmpName] = useState("");
     const localPlayerId = getLocalPlayerId();
@@ -91,6 +100,31 @@ export default function LobbyClient({gameId, inviteCode} : {gameId: string; invi
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+            <h3 className="font-semibold">Choose a deck</h3>
+
+            {/* Display Decks */}
+            <div className="grid grid-cols-3 gap-4">
+                {decks.map(d => (
+                    <button key={d.id}>
+                        <img
+                            src={getPublicUrl(d.cover_image)}
+                             alt={d.name}
+                        />
+                    </button>
+                ))}
+            </div>
+
+            {/* Display Cards */}
+            <div className="grid grid-cols-6 gap-2">
+                {cards.map(c => (
+                    <button key={c.id}>
+                        <img
+                            src={getPublicUrl(c.image)}
+                            alt={c.name}
+                        />
+                    </button>
+                ))}
+            </div>
             <h1 className="text-2xl font-bold">Lobby</h1>
             <h2 className="text-lg">Invite Code: {inviteCode}</h2>
 
