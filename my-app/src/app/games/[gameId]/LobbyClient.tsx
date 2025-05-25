@@ -185,6 +185,21 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
         if (error) console.error("Error picking card:", error);
     }
 
+    const seedPlayerCards = async () => {
+        const rows = players.flatMap(player =>
+            cards!.map(card => (
+                {
+                    player_id: player.id,
+                    card_id: card.id
+                })
+            )
+        );
+
+        await supabase
+            .from("player_cards")
+            .upsert(rows, { onConflict: "player_id,card_id"});
+    }
+
     const startGame = async () => {
         if (playerCount < 2) return;
 
@@ -204,6 +219,8 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
             console.error("Game not started:", error);
             return;
         }
+
+        await seedPlayerCards();
 
         router.push(`/games/${gameId}/play`);
     }

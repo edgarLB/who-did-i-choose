@@ -1,7 +1,5 @@
-export default function GameScreen(){
+export default function PlayPage(){
     return(
-        <div>
-            <h1>Game</h1>
-        </div>
+        <PlayPage/>
     )
 }
