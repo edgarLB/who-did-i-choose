@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Deck, Card } from "@/types";
 import {getPublicUrl} from "@/lib/getPublicUrl";
+import {useRouter} from "next/navigation";
 
 export default function LobbyClient({gameId, inviteCode, decks, deckId : intialDeckId, cards : intialCards} : {
     gameId: string;
@@ -23,6 +24,7 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
     const [tmpName, setTmpName] = useState("");
     const localPlayerId = getLocalPlayerId();
     const playerCount = players.length;
+    const router = useRouter();
 
     // Fetch players & subscribe to realtime changes
     useEffect(() => {
@@ -87,6 +89,13 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                     filter: `id=eq.${gameId}`,
                 },
                 async (payload) => {
+
+                    // so the player that didn't press start also goes to the game screen
+                    if (payload.new.status === "in_progress"){
+                        router.push(`/games/${gameId}/play`);
+                        return;
+                    }
+
                     const newDeckId = payload.new.deck_id as string;
 
                     // update and clear local deck and pick
@@ -175,6 +184,30 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
 
         if (error) console.error("Error picking card:", error);
     }
+
+    const startGame = async () => {
+        if (playerCount < 2) return;
+
+    //     Pick who starts
+        const [p1, p2] = players;
+        const firstTurnId = Math.random() < 0.5 ? p1.id : p2.id;
+
+        const {error} = await supabase
+            .from("games")
+            .update({
+                status: "in_progress",
+                current_player_id: firstTurnId,
+            })
+            .eq("id", gameId);
+
+        if (error) {
+            console.error("Game not started:", error);
+            return;
+        }
+
+        router.push(`/games/${gameId}/play`);
+    }
+
     return (
         <div className="flex flex-col items-center justify-center min-h-screen gap-4">
 
@@ -261,7 +294,12 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                 ))}
             </div>
 
-            <Button disabled={playerCount < 2}>Start Game</Button>
+            <Button
+                disabled={playerCount < 2}
+                onClick={() => startGame()}
+            >
+                Start Game
+            </Button>
         </div>
     );
 }
