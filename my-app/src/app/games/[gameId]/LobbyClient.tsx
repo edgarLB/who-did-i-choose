@@ -92,7 +92,7 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
 
                     // so the player that didn't press start also goes to the game screen
                     if (payload.new.status === "in_progress"){
-                        router.push(`/games/${gameId}/play`);
+                        router.push(`/games/${inviteCode}/play`);
                         return;
                     }
 
@@ -222,7 +222,7 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
 
         await seedPlayerCards();
 
-        router.push(`/games/${gameId}/play`);
+        router.push(`/games/${inviteCode}/play`);
     }
 
     return (
