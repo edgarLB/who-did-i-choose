@@ -14,6 +14,9 @@ export default function PlayClient({game, players, cards}){
     const isMyTurn = currentTurnId === localPlayerId;
     const [myFlipped, setMyFlipped] = useState<Record<string, boolean>>({});
     const [enemyFlipped, setEnemyFlipped] = useState<Record<string, boolean>>({});
+    const [guessing, setGuessing] = useState(false);
+    const [guessCardId, setGuessCardId] = useState<string | null>(null);
+    const [guessResult, setGuessResult] = useState<"win" | "lose" | null>(null);
 
 
 
@@ -120,6 +123,29 @@ export default function PlayClient({game, players, cards}){
         return () => supabase.removeChannel(oppChannel);
     }, [game.id, opponentId]);
 
+    //
+    async function handleGuessConfirm(){
+        if (!guessCardId || !opponentId) return;
+
+        // invokes edge function
+        // returns true if correct, false if wrong
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/check-guess`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ guessCardId, opponentId }),
+        });
+
+        if (!res.ok) {
+            console.error(await res.text());
+        } else {
+            const { result } = await res.json();
+            // True: Win, False: Lose
+            setGuessResult(result ? "win" : "lose");
+        }
+
+
+    }
+
     async function endTurn() {
         // Safeguard: Only current player can end their turn
         if (!isMyTurn || !opponentId) return;
@@ -142,21 +168,50 @@ export default function PlayClient({game, players, cards}){
 
     return(
         <div>
+            {guessResult === "win" && <p>You win!</p>}
+            {guessResult === "lose" && <p>Loser 🤣🫵</p>}
             <h2>{isMyTurn ? "My Turn" : "Opponent Turn"}</h2>
             <Button disabled={!isMyTurn} onClick={endTurn}>END TURN</Button>
 
+            <Button disabled={!isMyTurn || guessing} onClick={() => setGuessing(true)}>Guess</Button>
             {/*    My Board    */}
             <div className="grid grid-cols-6 gap-2">
                 {cards.map(c => (
-                    <button
-                        key={c.id}
-                        onClick={() => toggleFlip(c.id)}
-                    >
-                        <img
-                            src={myFlipped[c.id] ? "/images/back_temp.webp" : getPublicUrl(c.image)}
-                            alt={c.name}
-                        />
-                    </button>
+                    <div key={c.id} className="relative">
+                        {guessing ? (
+                            // Guessing Mode
+                            <>
+                                {/*render cards normally*/}
+                                <button onClick={() => setGuessCardId(c.id)}>
+                                    <img
+                                        src={myFlipped[c.id] ? "/images/back_temp.webp" : getPublicUrl(c.image)}
+                                        alt={c.name}
+                                    />
+                                </button>
+                                {/* show confirm button on card user guesses */}
+                                {guessCardId === c.id && (
+                                    <button
+                                        className="absolute inset-0 flex items-center justify-center bg-black text-white font-bold"
+                                        onClick={handleGuessConfirm}
+                                    >
+                                        Confirm
+                                    </button>
+                                )
+
+                                }
+                            </>
+
+                        ) : (
+                            // Normal Turn
+                            <button onClick={() => toggleFlip(c.id)}>
+                                <img
+                                    src={myFlipped[c.id] ? "/images/back_temp.webp" : getPublicUrl(c.image)}
+                                    alt={c.name}
+                                />
+                            </button>
+                        )}
+                    </div>
+
                 ))}
             </div>
 
