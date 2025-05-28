@@ -12,8 +12,28 @@ export default function PlayClient({game, players, cards}){
     const opponentId = players.find((p) => p.id !== localPlayerId)?.id;
     const [currentTurnId, setCurrentTurnId] = useState(game.current_player_id);
     const isMyTurn = currentTurnId === localPlayerId;
+    const [myFlipped, setMyFlipped] = useState<Record<string, boolean>>({});
+
+
 
     useEffect(() => {
+        // Initializes card flips
+        // Just in case page is reloaded
+        async function loadFlippedCards()  {
+            const { data} = await supabase
+                .from("player_cards")
+                .select("card_id, flipped")
+                .eq("player_id", localPlayerId);
+
+            if (data) {
+                setMyFlipped(Object.fromEntries(data.map(row => [row.card_id, row.flipped])))
+            }
+        }
+
+        loadFlippedCards()
+
+
+
         // Realtime games channel
         const gameChannel = supabase
             .channel(`game-${game.id}`)
@@ -34,7 +54,31 @@ export default function PlayClient({game, players, cards}){
             .subscribe();
 
         return () => supabase.removeChannel(gameChannel);
-    }, [game.id]);
+    }, [game.id, localPlayerId]);
+
+    // flip or unflip card
+    async function toggleFlip(cardId: string) {
+        if (!isMyTurn) return;
+
+        const isCurrentlyFlipped = myFlipped[cardId] ?? false;
+        const newFlipState = !isCurrentlyFlipped;
+
+        // update UI locally
+        setMyFlipped(prev => ({ ...prev, [cardId]: newFlipState }));
+
+        // update DB state
+        const { error } = await supabase
+            .from("player_cards")
+            .update({flipped: newFlipState})
+            .eq("player_id", localPlayerId)
+            .eq("card_id", cardId);
+
+        if (error) {
+            console.error("Flip failed :(", error);
+            // Undo UI update if DB update fails
+            setMyFlipped(prev => ({ ...prev, [cardId]: isCurrentlyFlipped }));
+        }
+    }
 
     async function endTurn() {
         // Safeguard: Only current player can end their turn
@@ -66,9 +110,10 @@ export default function PlayClient({game, players, cards}){
                 {cards.map(c => (
                     <button
                         key={c.id}
+                        onClick={() => toggleFlip(c.id)}
                     >
                         <img
-                            src={getPublicUrl(c.image)}
+                            src={myFlipped[c.id] ? "/images/back_temp.webp" : getPublicUrl(c.image)}
                             alt={c.name}
                         />
                     </button>
