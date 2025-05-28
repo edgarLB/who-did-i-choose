@@ -13,11 +13,12 @@ export default function PlayClient({game, players, cards}){
     const [currentTurnId, setCurrentTurnId] = useState(game.current_player_id);
     const isMyTurn = currentTurnId === localPlayerId;
     const [myFlipped, setMyFlipped] = useState<Record<string, boolean>>({});
+    const [enemyFlipped, setEnemyFlipped] = useState<Record<string, boolean>>({});
 
 
 
     useEffect(() => {
-        // Initializes card flips
+        // Initializes MY card flips
         // Just in case page is reloaded
         async function loadFlippedCards()  {
             const { data} = await supabase
@@ -80,6 +81,45 @@ export default function PlayClient({game, players, cards}){
         }
     }
 
+    useEffect(() => {
+        if (!opponentId) return;
+
+        // Initializes OPPONENT'S card flips
+        // Just in case page is reloaded
+        async function loadFlippedCards()  {
+            const { data} = await supabase
+                .from("player_cards")
+                .select("card_id, flipped")
+                .eq("player_id", opponentId);
+
+            if (data) {
+                setEnemyFlipped(Object.fromEntries(data.map(row => [row.card_id, row.flipped])))
+            }
+        }
+
+        loadFlippedCards()
+
+        // See in realtime how many cards your opponent has narrowed down
+        const oppChannel = supabase
+            .channel(`flipped-${opponentId}`)
+            .on(
+                "postgres_changes",
+                {
+                    event: "UPDATE",
+                    schema: "public",
+                    table: "player_cards",
+                    filter: `player_id=eq.${opponentId}`,
+                },
+                payload =>
+                    setEnemyFlipped(flip => ({
+                        ...flip, [payload.new.card_id]: payload.new.flipped,
+                    }))
+            )
+            .subscribe()
+
+        return () => supabase.removeChannel(oppChannel);
+    }, [game.id, opponentId]);
+
     async function endTurn() {
         // Safeguard: Only current player can end their turn
         if (!isMyTurn || !opponentId) return;
@@ -123,14 +163,20 @@ export default function PlayClient({game, players, cards}){
             {/*    Enemy's Board    */}
             <div className="grid grid-cols-6 gap-2">
                 {cards.map(c => (
-                    <button
-                        key={c.id}
-                    >
-                        <img
-                            src="/images/back_temp.webp"
-                            alt="Flipped Card"
-                        />
-                    </button>
+                    <div key={c.id}>
+                        {enemyFlipped[c.id] ? (
+                            // blank space if flipped
+                            <div className="w-full bg-white"/>
+                        ) : (
+                            // back of card otherwise
+                            <img
+                                    src="/images/back_temp.webp"
+                                    alt="Flipped Card"
+                                />
+                        )}
+
+                    </div>
+
                 ))}
             </div>
         </div>
