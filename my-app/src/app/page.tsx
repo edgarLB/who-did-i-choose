@@ -148,53 +148,56 @@ export default function Home() {
 
   return (
       <div className="flex items-center justify-center min-h-screen">
-          <div className="flex flex-col gap-2 text-center">
-              <h1>Who Did I Choose?</h1>
-              <Tabs defaultValue={tab1} className="w-[500px]">
-                  <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value={tab1}>{tab1}</TabsTrigger>
-                      <TabsTrigger value={tab2}>{tab2}</TabsTrigger>
+          <div className="flex flex-col gap-10 text-center justify-center">
+              <img src="/images/logo.webp" className="logo-home mx-auto" alt="Who Did I Choose?"/>
+              <Tabs defaultValue={tab1} className="w-[600px]">
+                  <TabsList className="grid w-full h-full p-2 grid-cols-2 tab-list">
+                      <TabsTrigger className="tab-item shadow-text" value={tab1}>{tab1}</TabsTrigger>
+                      <TabsTrigger className="tab-item shadow-text" value={tab2}>{tab2}</TabsTrigger>
                   </TabsList>
                   <TabsContent value={tab1}>
-                      <Card>
+                      <Card className="card">
                           <CardHeader>
-                              <CardTitle>{tab1} a New Game</CardTitle>
+                              <CardTitle className="card-title">{tab1} a New Game</CardTitle>
                           </CardHeader>
-                          <CardContent className="space-y-2">
-                              <div className="space-y-1">
-                                  <Label htmlFor="name">Name</Label>
-                                  <Input type="text" placeholder="Player 1" value={username}
-                                         onChange={(e) => setUsername(e.target.value)} />
+                          <CardContent>
+                              <div className="white-box-container flex flex-row gap-2 items-center">
+                                  <div>
+                                      <Label className="blue-text" htmlFor="name">Name</Label>
+                                      <Input type="text" placeholder="Player 1" value={username} className="white-text-box chunky-text"
+                                             onChange={(e) => setUsername(e.target.value)} />
+
+                                  </div>
+                                      <Button
+                                      onClick={createGame} className="blue-button shadow-text"
+                                  >Create</Button>
                               </div>
                           </CardContent>
-                          <CardFooter>
-                              <Button
-                                  onClick={createGame}
-                              >Create</Button>
-                          </CardFooter>
                       </Card>
                   </TabsContent>
                   <TabsContent value={tab2}>
-                      <Card>
+                      <Card className="card">
                           <CardHeader>
-                              <CardTitle>{tab2} an Existing Game</CardTitle>
+                              <CardTitle className="card-title">{tab2} an Existing Game</CardTitle>
                           </CardHeader>
                           <CardContent className="space-y-5">
-                              <div className="space-y-1">
-                                  <Label htmlFor="name">Name</Label>
-                                  <Input type="text" placeholder="Player 2" value={username}
+                              <div className="white-box-container">
+                                  <Label htmlFor="name" className="blue-text">Name</Label>
+                                  <Input type="text" placeholder="Player 2" value={username} className="white-text-box chunky-text"
                                          onChange={(e) => setUsername(e.target.value)} />
                               </div>
-                              <div className="space-y-1">
-                                  <Label htmlFor="code">Invite Code</Label>
-                                  <Input type="text" id="gameCode" placeholder="Code" value={gameCode}
-                                  onChange={(e) => setGameCode(e.target.value)} />
-                              </div>
+                              <div className="white-box-container flex flex-row gap-2 items-center">
+                                  <div>
+                                      <Label htmlFor="code" className="blue-text">Invite Code</Label>
+                                      <Input type="text" id="gameCode" placeholder="000-000" value={gameCode}
+                                             className="white-text-box chunky-text"
+                                             onChange={(e) => setGameCode(e.target.value)}/>
+
+                                  </div>
+                                  <Button onClick={() => joinGame(gameCode)} className="blue-button shadow-text"
+                                  >Join</Button>
+                                  </div>
                           </CardContent>
-                          <CardFooter>
-                              <Button onClick={() => joinGame(gameCode)}
-                              >Join</Button>
-                          </CardFooter>
                       </Card>
                   </TabsContent>
               </Tabs>
