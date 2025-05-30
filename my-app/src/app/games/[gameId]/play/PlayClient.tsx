@@ -5,6 +5,7 @@ import {getPublicUrl} from "@/lib/getPublicUrl";
 import CardBackIMG from "@/assets/images/back_temp.webp"
 import {supabase} from "@/lib/supabaseClient";
 import {Button} from "@/components/ui/button";
+import FlippingCard from "@/components/FlippingCard";
 
 export default function PlayClient({game, players, cards}){
 
@@ -203,12 +204,17 @@ export default function PlayClient({game, players, cards}){
 
                         ) : (
                             // Normal Turn
-                            <button onClick={() => toggleFlip(c.id)}>
-                                <img
-                                    src={myFlipped[c.id] ? "/images/back_temp.webp" : getPublicUrl(c.image)}
-                                    alt={c.name}
-                                />
-                            </button>
+                            // <button onClick={() => toggleFlip(c.id)}>
+                            //     <img
+                            //         src={myFlipped[c.id] ? "/images/back_temp.webp" : getPublicUrl(c.image)}
+                            //         alt={c.name}
+                            //     />
+                            // </button>
+                            <FlippingCard
+                                frontImage={getPublicUrl(c.image)}
+                                alt={c.name}
+                                onClick={() => toggleFlip(c.id)}
+                                flipped={myFlipped[c.id]} />
                         )}
                     </div>
 
@@ -219,19 +225,14 @@ export default function PlayClient({game, players, cards}){
             <div className="grid grid-cols-6 gap-2">
                 {cards.map(c => (
                     <div key={c.id}>
-                        {enemyFlipped[c.id] ? (
-                            // blank space if flipped
-                            <div className="w-full bg-white"/>
-                        ) : (
-                            // back of card otherwise
-                            <img
-                                    src="/images/back_temp.webp"
-                                    alt="Flipped Card"
-                                />
-                        )}
-
+                        <FlippingCard
+                            frontImage={"/images/back_temp.webp"} // This will be hidden on flip
+                            flipped={enemyFlipped[c.id]}
+                            enemy={true}
+                            alt={c.name}
+                            className="no-point"
+                        />
                     </div>
-
                 ))}
             </div>
         </div>
