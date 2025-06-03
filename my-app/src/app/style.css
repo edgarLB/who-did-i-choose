@@ -32,6 +32,14 @@ button {
     1px 1px 0 rgba(255, 255, 255, 0.5);
 }
 
+.card-br {
+    background-color: #F3CAA7;
+    border-width: 0;
+    box-shadow: inset 6px 7px 0 #9E7B67,
+    1px 1px 0 rgba(255, 255, 255, 0.5);
+    border-radius: 2em;
+}
+
 .white-box-container {
     background-color: white;
     padding: 15px;
@@ -61,11 +69,53 @@ button {
     padding: 1em;
     background: linear-gradient(#89F7FE, #66A6FF);
     box-shadow: inset -0.5px -0.5px 0 #A1F5F6,
+    inset 0 0 0 #2D527C,
     0 4px 0 #2D527C, -1px -1px 3.5px rgba(0,0,0, 0.1);
-    transition: ease-in 0.1s;
+    transition: all ease-in 0.1s,
+gr ease 0.1s;
+    /*scale: 110%;*/
 }
 
 .blue-button:hover {
+    transform: translateY(0.5rem);
+    box-shadow: inset -0.5px -0.5px 0 #A1F5F6,
+    inset 0 0 0 #2D527C,
+    0 0 0 #2D527C, -1px -1px 3.5px rgba(0,0,0, 0.1);
+
+}
+
+.blue-button:active {
+    background: linear-gradient(#66A6FF, #66A6FF);
+    box-shadow: inset -0.5px -0.5px 0 #A1F5F6,
+    inset 0 2px 0 #2D527C,
+    0  0 0 #2D527C,
+    -1px -1px 3.5px rgba(0,0,0, 0.1);
+}
+
+.blue-button span {
+    /*color: white;*/
+    transform: translateY(0);
+    transition: all ease-in 0.1s;
+}
+
+.blue-button:active span{
+    /*color: lightgray;*/
+    transform: translateY(2px);
+}
+
+.play-guess-button {
+    border-radius: 20px;
+    padding: 0.4em 0.4em 0.4em 0.4em;
+    background: linear-gradient(#89F7FE, #66A6FF);
+    box-shadow: inset -0.5px -0.5px 0 #A1F5F6,
+    0 0.5rem 0 #2D527C, -1px -1px 3.5px rgba(0,0,0, 0.1);
+    transition: ease-in 0.1s;
+    height: calc(100% - 0.5rem);
+    margin-bottom: 0.5rem;
+
+}
+
+.play-guess-button:hover {
     transform: translateY(4px);
     box-shadow: inset -0.5px -0.5px 0 #A1F5F6,
     0 0 0 #2D527C, -1px -1px 3.5px rgba(0,0,0, 0.1);
@@ -79,6 +129,12 @@ button {
     text-shadow: 0 3px 0 black;
     paint-order: stroke fill;
 }
+
+.emboss {
+    box-shadow: -1px -1px 2px rgba(179, 130, 100, 0.5),
+    1px 1px 1px rgba(255, 255, 255, 0.5);
+}
+
 
 .tab-list {
     background-color: #D9AF8A;
@@ -123,11 +179,14 @@ button {
     height: 100%;
     object-fit: cover;
     display: block;
+    pointer-events: none;
 }
 
 .card-face.back {
     /*border:  white solid;*/
     transform: rotateY(180deg);
+    background-color: #9E7B67;
+    box-shadow: inset 0 0 1em #B38264;
 }
 
 .enemy-back {
@@ -139,4 +198,94 @@ button {
 
 .no-point {
     cursor: default;
+}
+
+.play-gameboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    padding: 2em 1em;
+    text-align: center;
+    height: 100%;
+    width: 100%;
+}
+.grid-8{
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 0.4em;
+    row-gap: 0.4em;
+}
+
+.endturn-srn-lg-container{
+    position: relative;
+    width: min-content;
+    height: min-content;
+    padding-right: 16px;
+    padding-left: 16px;
+    padding-bottom: 26px;
+    padding-top: 1px;
+    background-color: #F3CAA7;
+    border-radius: 0 0 2em 2em;
+    border-width: 0;
+    box-shadow: inset 6px 0px 0 #9E7B67,
+    1px 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.play-chosen-card{
+    aspect-ratio: 3 / 4;
+    object-fit: contain;
+    display: block;
+    border-radius: 1em;
+
+}
+
+
+.game-area {
+    display: grid;
+    grid-template-columns: 1fr 55.12% 1fr;
+    gap: 0.5em;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+}
+
+.guess-button{
+    display: grid;
+    grid-template-rows: 88% 1fr;
+    padding-bottom: 0.5em;
+    height: 100%;
+    width: 100%;
+}
+.guess-button-user {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    background: radial-gradient(#66CEFC, #4293E5);
+    border-radius: 0.5em;
+    overflow: hidden;
+}
+
+.guess-user-svg {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    height: auto;
+    max-height: 90%;
+    mix-blend-mode: luminosity;
+}
+
+.endturn-logo {
+    bottom: 0;
+    max-width: 100%;
+    height: auto;
+    pointer-events: none;
+}
+
+.right {
+    display: flex;
+    flex-direction: column;
+    width: min-content;
+    justify-content: space-between;
 }

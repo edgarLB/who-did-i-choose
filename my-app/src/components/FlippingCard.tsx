@@ -22,6 +22,7 @@ export default function FlippingCard({
     enemy = false,
                                      }: FlippingCardProps) {
     return (
+        <button
             onClick={onClick}
             className={`relative w-full aspect-[300/400] ${className}`}
             style={{ perspective: '1000px' }}
@@ -32,7 +33,7 @@ export default function FlippingCard({
                 transition={{ duration: 0.3 }}
                 style={{ transformStyle: 'preserve-3d' }}
             >
-                <div className="card-face front">
+                <div className="card-face front emboss">
                     <img src={frontImage} alt={alt} />
                 </div>
 

@@ -7,7 +7,7 @@ import {supabase} from "@/lib/supabaseClient";
 import {Button} from "@/components/ui/button";
 import FlippingCard from "@/components/FlippingCard";
 
-export default function PlayClient({game, players, cards}){
+export default function PlayClient({game, players, cards, chosenCardID}){
 
     const localPlayerId = getLocalPlayerId();
     const opponentId = players.find((p) => p.id !== localPlayerId)?.id;
@@ -36,6 +36,7 @@ export default function PlayClient({game, players, cards}){
         }
 
         loadFlippedCards()
+
 
 
 
@@ -168,72 +169,137 @@ export default function PlayClient({game, players, cards}){
     }
 
     return(
-        <div>
+        <div className="flex flex-col items-center justify-center w-full h-full gap-5">
             {guessResult === "win" && <p>You win!</p>}
             {guessResult === "lose" && <p>Loser 🤣🫵</p>}
-            <h2>{isMyTurn ? "My Turn" : "Opponent Turn"}</h2>
-            <Button disabled={!isMyTurn} onClick={endTurn}>END TURN</Button>
 
-            <Button disabled={!isMyTurn || guessing} onClick={() => setGuessing(true)}>Guess</Button>
+            <img className="max-h-[8em] object-contain" src="/images/logo.webp" alt="Who Did I Choose?" />
+
             {/*    My Board    */}
-            <div className="grid grid-cols-6 gap-2">
-                {cards.map(c => (
-                    <div key={c.id} className="relative">
-                        {guessing ? (
-                            // Guessing Mode
-                            <>
-                                {/*render cards normally*/}
-                                <button onClick={() => setGuessCardId(c.id)}>
-                                    <img
-                                        src={myFlipped[c.id] ? "/images/back_temp.webp" : getPublicUrl(c.image)}
-                                        alt={c.name}
-                                    />
-                                </button>
-                                {/* show confirm button on card user guesses */}
-                                {guessCardId === c.id && (
+            <div className="play-gameboard-container card-br">
+                <h2 className="shadow-text">{isMyTurn ? "Your Turn" : "Opponent's Turn"}</h2>
+                <div className="grid-8">
+                    {cards.map(c => (
+                        <div key={c.id} className="relative">
+                            {guessing ? (
+                                // Guessing Mode
+                                <>
+                                    {/*render cards normally*/}
                                     <button
-                                        className="absolute inset-0 flex items-center justify-center bg-black text-white font-bold"
-                                        onClick={handleGuessConfirm}
-                                    >
-                                        Confirm
+                                        onClick={() => setGuessCardId(c.id)}>
+                                        <img
+                                            src={myFlipped[c.id] ? "/images/back_temp.webp" : getPublicUrl(c.image)}
+                                            alt={c.name}
+                                        />
                                     </button>
-                                )
+                                    {/* show confirm button on card user guesses */}
+                                    {guessCardId === c.id && (
+                                        <button
+                                            className="absolute inset-0 flex items-center justify-center bg-black text-white font-bold"
+                                            onClick={handleGuessConfirm}
+                                        >
+                                            Confirm
+                                        </button>
+                                    )
 
-                                }
-                            </>
+                                    }
+                                </>
 
-                        ) : (
-                            // Normal Turn
-                            // <button onClick={() => toggleFlip(c.id)}>
-                            //     <img
-                            //         src={myFlipped[c.id] ? "/images/back_temp.webp" : getPublicUrl(c.image)}
-                            //         alt={c.name}
-                            //     />
-                            // </button>
-                            <FlippingCard
-                                frontImage={getPublicUrl(c.image)}
-                                alt={c.name}
-                                onClick={() => toggleFlip(c.id)}
-                                flipped={myFlipped[c.id]} />
-                        )}
-                    </div>
+                            ) : (
+                                // Normal Turn
+                                // <button onClick={() => toggleFlip(c.id)}>
+                                //     <img
+                                //         src={myFlipped[c.id] ? "/images/back_temp.webp" : getPublicUrl(c.image)}
+                                //         alt={c.name}
+                                //     />
+                                // </button>
+                                <FlippingCard
+                                    frontImage={getPublicUrl(c.image)}
+                                    alt={c.name}
+                                    onClick={() => toggleFlip(c.id)}
+                                    flipped={myFlipped[c.id]}/>
+                            )}
+                        </div>
 
-                ))}
+                    ))}
+                </div>
+                <div>
+                    <Button disabled={!isMyTurn}
+                            onClick={endTurn}
+                            className="blue-button shadow-text"
+                    >END TURN</Button>
+                </div>
+
+
             </div>
 
-            {/*    Enemy's Board    */}
-            <div className="grid grid-cols-6 gap-2">
-                {cards.map(c => (
-                    <div key={c.id}>
-                        <FlippingCard
-                            frontImage={"/images/back_temp.webp"} // This will be hidden on flip
-                            flipped={enemyFlipped[c.id]}
-                            enemy={true}
-                            alt={c.name}
-                            className="no-point"
-                        />
+                <div className="game-area h-full w-full">
+                    <img className="play-chosen-card emboss" src={getPublicUrl(cards.find((c) => c.id === chosenCardID)?.image)}/>
+                    {/*    Enemy's Board    */}
+                    <div className="grid-8 enemy-board">
+                        {cards.map(c => (
+                            <div key={c.id}>
+                                <FlippingCard
+                                    frontImage={"/images/back_temp.webp"} // This will be hidden on flip
+                                    flipped={enemyFlipped[c.id]}
+                                    enemy={true}
+                                    alt={c.name}
+                                    className="no-point"
+                                />
+                            </div>
+                        ))}
                     </div>
-                ))}
+                    {/*<img className="play-chosen-card" src={getPublicUrl(cards.find((c) => c.id === chosenCardID)?.image)}/>*/}
+                    <Button
+                        className="play-guess-button shadow-text w-full"
+
+                        disabled={!isMyTurn || guessing}
+                        onClick={() => setGuessing(true)}
+                    >
+                        <div className="guess-button">
+                            <div className="guess-button-user">
+                                <svg
+                                    className="guess-user-svg"
+                                    viewBox="0 0 122 158"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        clipRule="evenodd"
+                                        d="M61.1529 66.8942C79.501 66.8942 94.375 52.0201 94.375 33.6719C94.375 15.3238 79.501 0.449707 61.1529 0.449707C42.8048 0.449707 27.9307 15.3238 27.9307 33.6719C27.9307 52.0201 42.8048 66.8942 61.1529 66.8942Z"
+                                        fill="#5F6E73"
+                                    />
+                                    <path
+                                        fillRule="evenodd"
+                                        clipRule="evenodd"
+                                        d="M121.937 157.333C118.594 106.473 92.655 66.8942 61.1529 66.8942C29.6505 66.8942 3.71224 106.473 0.369141 157.333H121.937Z"
+                                        fill="#5F6E73"
+                                    />
+                                </svg>
+                            </div>
+
+
+                            <h2 className="p-1">Guess</h2>
+
+
+                        </div>
+                    </Button>
+
+
+
+                {/*<div className="right">*/}
+                {/*    <div className="endturn-srn-lg-container">*/}
+                {/*        <Button disabled={!isMyTurn}*/}
+                {/*                onClick={endTurn}*/}
+                {/*                className="blue-button shadow-text"*/}
+                {/*        >END TURN</Button>*/}
+                {/*    </div>*/}
+
+                {/*    <img src="/images/logo.webp" className="endturn-logo"/>*/}
+                {/*</div>*/}
+
+
             </div>
         </div>
     )

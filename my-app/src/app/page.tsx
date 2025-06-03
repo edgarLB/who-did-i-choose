@@ -86,7 +86,7 @@ export default function Home() {
 
         // Store player ID for game permissions
         localStorage.setItem('playerId', playerData.id);
-
+        document.cookie = `playerId=${playerData.id}; path=/; max-age=86400;`
         // Navigate to the lobby page with the created game id
         router.push(`/games/${gameData.game_code}`);
     }
@@ -141,7 +141,7 @@ export default function Home() {
 
         // Store player ID for game permissions
         localStorage.setItem('playerId', playerData.id);
-
+        document.cookie = `playerId=${playerData.id}; path=/; max-age=86400;`
         // Navigate to the lobby page with the found game id
         router.push(`/games/${gameData.game_code}`);
     }

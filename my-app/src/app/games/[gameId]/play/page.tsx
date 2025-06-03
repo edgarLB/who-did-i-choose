@@ -1,9 +1,13 @@
 import {notFound} from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import PlayClient from "@/app/games/[gameId]/play/PlayClient";
+import {getLocalPlayerId} from "@/lib/utils";
+import {cookies} from "next/headers";
 
 export default async function PlayPage({ params }: { params: { gameId: string } }) {
 
+    const cookieStore = await cookies();
+    const localPlayerId = cookieStore.get("playerId")?.value;
     // Query looking for game
     const { data: game } = await supabase
         .from('games')
@@ -29,11 +33,26 @@ export default async function PlayPage({ params }: { params: { gameId: string } 
         .select("id, screen_name")
         .eq("game_id", game.id);
 
+    // Only ever recieve the locals player's chosen card
+    // help prevent cheating
+    const {data:localPlayer} = await supabase
+        .from("players")
+        .select("chosen_card_id")
+        .eq("id", localPlayerId)
+        .maybeSingle()
+
     return(
-        <PlayClient
-            game = {game}
-            players = {players ?? []}
-            cards = {cards ?? []}
-        />
+<div className="flex items-center justify-center w-full h-full h-full">
+    <div className="w-full max-w-screen-xl h-full">
+    <PlayClient
+        game = {game}
+        players = {players ?? []}
+        cards = {cards ?? []}
+        chosenCardID={localPlayer?.chosen_card_id ?? null}
+    />
+    </div>
+
+</div>
+
     );
 }
