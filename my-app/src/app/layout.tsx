@@ -22,11 +22,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
+    <body
         className={`${grandstander.variable} antialiased`}
-      >
-        {children}
-      </body>
+    >
+    {children}
+    </body>
     </html>
   );
 }

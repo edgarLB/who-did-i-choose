@@ -7,6 +7,8 @@ import { supabase } from "@/lib/supabaseClient";
 import { Deck, Card } from "@/types";
 import {getPublicUrl} from "@/lib/getPublicUrl";
 import {useRouter} from "next/navigation";
+import {Label} from "@/components/ui/label";
+import {Separator} from "@/components/ui/separator";
 
 export default function LobbyClient({gameId, inviteCode, decks, deckId : intialDeckId, cards : intialCards} : {
     gameId: string;
@@ -226,97 +228,125 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
     }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+        <div className="lobby-container">
+            <div className="lobby-side-bar">
+                <img src="/images/logo.webp" alt="Who Did I Choose?"/>
+                <div className="players-container">
+                    <h3 className="shadow-title">Players</h3>
+                    {/* Display Players List */}
+                    <div className="players-card card-br">
 
-            <h1 className="text-2xl font-bold">Lobby</h1>
-            <h2 className="text-lg">Invite Code: {inviteCode}</h2>
+                        <ul className="space-y-1">
+                            {players.map((player) => (
+                                <li key={player.id} className="flex items-center gap-2">
+                                    {player.id === localPlayerId ? (
+                                        isEditing ? (
+                                            <div className="white-box-container flex flex-row gap-2 items-center">
+                                                <Input
+                                                    value={tmpName}
+                                                    onChange={(e) => setTmpName(e.target.value)}
+                                                    className="white-text-box bold-text-sma"
+                                                />
+                                                <Button
+                                                    className="silver-button shadow-text"
+                                                    onClick={() => setIsEditing(false)}
+                                                >
+                                                    X
+                                                </Button>
+                                                <Button className="blue-button shadow-text" onClick={saveScreenName}>
+                                                    Save
+                                                </Button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-row w-full justify-between gap-2 items-center p-[15px]">
+                                                <span className="shadow-text">{player.screen_name}</span>
+                                                <Button className="silver-button shadow-text" onClick={() => {
+                                                    setTmpName(player.screen_name);
+                                                    setIsEditing(true);
+                                                }}>
+                                                    Edit
+                                                </Button>
+                                            </div>
 
-            {/* Display Players List */}
-            <p className="font-semibold">Players:</p>
-            <ul className="space-y-1">
-                {players.map((player) => (
-                    <li key={player.id} className="flex items-center gap-2">
-                        {player.id === localPlayerId ? (
-                            isEditing ? (
-                                <>
-                                    <Input
-                                        value={tmpName}
-                                        onChange={(e) => setTmpName(e.target.value)}
-                                        className="w-40 h-8"
-                                    />
-                                    <Button size="sm" onClick={saveScreenName}>
-                                        Save
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => setIsEditing(false)}
-                                    >
-                                        Cancel
-                                    </Button>
-                                </>
-                            ) : (
-                                <>
-                                    <span className="font-medium">{player.screen_name}</span>
-                                    <Button size="sm" variant="ghost" onClick={() => {
-                                        setTmpName(player.screen_name);
-                                        setIsEditing(true);
-                                    }}>
-                                        Edit
-                                    </Button>
-                                </>
-                            )
-                        ) : (
-                            <span>{player.screen_name}</span>
-                        )}
-                    </li>
-                ))}
-            </ul>
-            {playerCount < 2 ? (
-                <p>Waiting for the other player…</p>
-            ) : null}
+                                        )
 
+                                    ) : (
+                                        <span className="shadow-text p-[15px]">{player.screen_name}</span>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                        {playerCount < 2 ? (
+                            <p className="shadow-text p-[15px] separate text-center">Waiting for the other player…</p>
+                        ) : null}
+                    </div>
+                </div>
 
-            {/* Display Decks */}
-            <p className="font-semibold">Choose a Deck:</p>
-            <div className="grid grid-cols-3 gap-4">
-                {decks.map(d => (
-                    <button
-                        key={d.id}
-                        onClick={() => chooseDeck(d.id)}
-                        className={`rounded p-1 ${d.id === deckId ? "ring-2 ring-green-500" : ""}`}
+                <div className="space-y-5 w-full">
+                    <div className="white-box-container flex flex-row justify-between gap-2 items-center">
+                        <div>
+                            <Label className="blue-text">Invite Code</Label>
+                            <Label className="chunky-text">{inviteCode}</Label>
+                        </div>
 
+                        <Button className="blue-button shadow-text">Join</Button>
+                    </div>
+
+                    <Button
+                        disabled={playerCount < 2}
+                        onClick={() => startGame()}
+                        className="blue-button shadow-title w-full"
                     >
-                        <img
-                            src={getPublicUrl(d.cover_image)}
-                            alt={d.name}
-                        />
-                    </button>
-                ))}
+                        <span>Start Game</span>
+                    </Button>
+                </div>
+
+
             </div>
 
-            {/* Display Cards */}
-            <div className="grid grid-cols-6 gap-2">
-                {cards.map(c => (
-                    <button
-                        key={c.id}
-                        onClick={() => chooseCard(c.id)}
-                        className={`rounded ${pickedCardId === c.id ? "ring-2 ring-blue-500" : ""}`}
-                    >
-                        <img
-                            src={getPublicUrl(c.image)}
-                            alt={c.name}
-                        />
-                    </button>
-                ))}
+            <div className="lobby-main">
+                <div className="lobby-main-item">
+                    {/* Display Decks */}
+                    <h3 className="shadow-title">Choose a Deck</h3>
+
+                    <div className="grid grid-cols-3 gap-4">
+                        {decks.map(d => (
+                            <button
+                                key={d.id}
+                                onClick={() => chooseDeck(d.id)}
+                                className={`rounded p-1 ${d.id === deckId ? "ring-2 ring-green-500" : ""}`}
+
+                            >
+                                <img
+                                    src={getPublicUrl(d.cover_image)}
+                                    alt={d.name}
+                                />
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="lobby-main-item">
+                    {/* Display Cards */}
+                    <h3 className="shadow-title">Choose a Card</h3>
+                    <div className="grid grid-cols-6 gap-2">
+                        {cards.map(c => (
+                            <button
+                                key={c.id}
+                                onClick={() => chooseCard(c.id)}
+                                className={`rounded ${pickedCardId === c.id ? "ring-2 ring-blue-500" : ""}`}
+                            >
+                                <img
+                                    src={getPublicUrl(c.image)}
+                                    alt={c.name}
+                                />
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
             </div>
 
-            <Button
-                disabled={playerCount < 2}
-                onClick={() => startGame()}
-            >
-                Start Game
-            </Button>
         </div>
     );
 }

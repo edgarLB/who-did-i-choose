@@ -47,6 +47,7 @@ button {
     box-shadow: 0 4px 0 #A4A4A4 ;
 }
 
+
 .white-text-box {
     border-radius: 0;
     border-width: 0;
@@ -57,6 +58,11 @@ button {
 .chunky-text {
     font-weight: 900;
     font-size: 36px;
+}
+
+.bold-text-sma {
+    font-weight: 900;
+    font-size: 28px;
 }
 
 .blue-text {
@@ -103,6 +109,45 @@ gr ease 0.1s;
     transform: translateY(2px);
 }
 
+.silver-button {
+    border-radius: 19px;
+    padding: 1em;
+    background: linear-gradient(#C9EAFA, #9AB7D3);
+    box-shadow: inset -0.5px -0.5px 0 #DAEEE9,
+    inset 0 0 0 #2D527C,
+    0 4px 0 #537296, -1px -1px 3.5px rgba(0,0,0, 0.1);
+    transition: all ease-in 0.1s,
+    gr ease 0.1s;
+    /*scale: 110%;*/
+}
+
+.silver-button:hover {
+    transform: translateY(0.5rem);
+    box-shadow: inset -0.5px -0.5px 0 #DAEEE9,
+    inset 0 0 0 #2D527C,
+    0 0 0 #2D527C, -1px -1px 3.5px rgba(0,0,0, 0.1);
+
+}
+
+.silver-button:active {
+    background: linear-gradient(#9AB7D3, #9AB7D3);
+    box-shadow: inset -0.5px -0.5px 0 #DAEEE9,
+    inset 0 2px 0 #537296,
+    0  0 0 #2D527C,
+    -1px -1px 3.5px rgba(0,0,0, 0.1);
+}
+
+.silver-button span {
+    /*color: white;*/
+    transform: translateY(0);
+    transition: all ease-in 0.1s;
+}
+
+.silver-button:active span{
+    /*color: lightgray;*/
+    transform: translateY(2px);
+}
+
 .play-guess-button {
     border-radius: 20px;
     padding: 0.4em 0.4em 0.4em 0.4em;
@@ -126,6 +171,15 @@ gr ease 0.1s;
     font-weight: bold;
     color: white;
     -webkit-text-stroke: 4px black;
+    text-shadow: 0 3px 0 black;
+    paint-order: stroke fill;
+}
+
+.shadow-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+    -webkit-text-stroke: 6px black;
     text-shadow: 0 3px 0 black;
     paint-order: stroke fill;
 }
@@ -288,4 +342,49 @@ gr ease 0.1s;
     flex-direction: column;
     width: min-content;
     justify-content: space-between;
+}
+
+.players-container {
+
+}
+
+.players-card {
+    padding: 0.5em;
+}
+
+.lobby-container {
+    display: grid;
+    grid-template-columns: 0.4fr 1fr;
+    gap: 1em;
+    width: 100%;
+    height: 100vh;
+    max-height: 800px;
+    align-items: center;
+    justify-content: center;
+}
+
+.lobby-side-bar {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+
+}
+
+.lobby-main {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.lobby-main-item {
+    flex: 1;
+    overflow: hidden;
+    padding-left: 1em;
+
+}
+
+.separate {
+    margin-top: 0.5em;
+    box-shadow: 0 -1px 0 #D9AF8A;
 }
