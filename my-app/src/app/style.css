@@ -83,7 +83,7 @@ gr ease 0.1s;
 }
 
 .blue-button:hover {
-    transform: translateY(0.5rem);
+    transform: translateY(4px);
     box-shadow: inset -0.5px -0.5px 0 #A1F5F6,
     inset 0 0 0 #2D527C,
     0 0 0 #2D527C, -1px -1px 3.5px rgba(0,0,0, 0.1);
@@ -122,7 +122,7 @@ gr ease 0.1s;
 }
 
 .silver-button:hover {
-    transform: translateY(0.5rem);
+    transform: translateY(4px);
     box-shadow: inset -0.5px -0.5px 0 #DAEEE9,
     inset 0 0 0 #2D527C,
     0 0 0 #2D527C, -1px -1px 3.5px rgba(0,0,0, 0.1);
@@ -354,13 +354,14 @@ gr ease 0.1s;
 
 .lobby-container {
     display: grid;
-    grid-template-columns: 0.4fr 1fr;
+    grid-template-columns: 0.3fr 1fr;
     gap: 1em;
     width: 100%;
     height: 100vh;
     max-height: 800px;
     align-items: center;
     justify-content: center;
+    /*background-color: #89F7FE;*/
 }
 
 .lobby-side-bar {
@@ -368,6 +369,7 @@ gr ease 0.1s;
     flex-direction: column;
     height: 100%;
     justify-content: space-between;
+    /*background-color: deeppink;*/
 
 }
 
@@ -375,16 +377,28 @@ gr ease 0.1s;
     display: flex;
     flex-direction: column;
     height: 100%;
+    /*gap: 0em;*/
+    overflow: hidden;
+    /*background-color: pink;*/
+
 }
 
 .lobby-main-item {
     flex: 1;
-    overflow: hidden;
-    padding-left: 1em;
-
+    /*background-color: green;*/
 }
 
 .separate {
     margin-top: 0.5em;
     box-shadow: 0 -1px 0 #D9AF8A;
 }
+
+.picker-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: 0.5em;
+    /*overflow: hidden;*/
+}
+

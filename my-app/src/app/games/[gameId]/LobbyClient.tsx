@@ -9,6 +9,7 @@ import {getPublicUrl} from "@/lib/getPublicUrl";
 import {useRouter} from "next/navigation";
 import {Label} from "@/components/ui/label";
 import {Separator} from "@/components/ui/separator";
+import Picker, { PickerItem } from "@/components/Picker";
 
 export default function LobbyClient({gameId, inviteCode, decks, deckId : intialDeckId, cards : intialCards} : {
     gameId: string;
@@ -43,7 +44,13 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
             if (playersError) {
                 console.error("Error fetching players:", playersError);
             } else {
-                setPlayers(initialPlayers ?? []);
+                const playersList = initialPlayers ?? [];
+                setPlayers(playersList);
+
+                const me = playersList.find(p=>p.id === localPlayerId);
+                if (me?.chosen_card_id) {
+                    setPickedCardId(me.chosen_card_id);
+                }
             }
 
             // Subscribe to realtime changes to players
@@ -119,6 +126,21 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
             if (gameChannel) supabase.removeChannel(gameChannel);
         };
     }, [gameId]);
+
+    const deckItems: { image: string | null; id: string; label: string }[] = decks.map((d) => ({
+        id: d.id,
+        image: getPublicUrl(d.cover_image),
+        label: d.name,
+    }));
+
+    const cardItems: { image: string | null; id: string; label: string }[] = cards.map((c) => ({
+        id: c.id,
+        image: getPublicUrl(c.image),
+        label: c.name,
+    }));
+
+// …
+
 
     // To let players change their screen name
     const saveScreenName = async () => {
@@ -230,9 +252,22 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
     return (
         <div className="lobby-container">
             <div className="lobby-side-bar">
-                <img src="/images/logo.webp" alt="Who Did I Choose?"/>
+
+                <div className="space-y-5 w-full">
+                    <img src="/images/logo.webp" alt="Who Did I Choose?"/>
+                    <div className="white-box-container flex flex-row justify-between gap-2 items-center">
+                        <div>
+                            <Label className="blue-text">Invite Code</Label>
+                            <Label className="chunky-text">{inviteCode}</Label>
+                        </div>
+
+                        <Button className="blue-button shadow-text">Join</Button>
+                    </div>
+
+
+                </div>
                 <div className="players-container">
-                    <h3 className="shadow-title">Players</h3>
+                <h3 className="shadow-title">Players</h3>
                     {/* Display Players List */}
                     <div className="players-card card-br">
 
@@ -258,7 +293,8 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                                                 </Button>
                                             </div>
                                         ) : (
-                                            <div className="flex flex-row w-full justify-between gap-2 items-center p-[15px]">
+                                            <div
+                                                className="flex flex-row w-full justify-between gap-2 items-center p-[15px]">
                                                 <span className="shadow-text">{player.screen_name}</span>
                                                 <Button className="silver-button shadow-text" onClick={() => {
                                                     setTmpName(player.screen_name);
@@ -282,67 +318,35 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                     </div>
                 </div>
 
-                <div className="space-y-5 w-full">
-                    <div className="white-box-container flex flex-row justify-between gap-2 items-center">
-                        <div>
-                            <Label className="blue-text">Invite Code</Label>
-                            <Label className="chunky-text">{inviteCode}</Label>
-                        </div>
 
-                        <Button className="blue-button shadow-text">Join</Button>
-                    </div>
-
-                    <Button
-                        disabled={playerCount < 2}
-                        onClick={() => startGame()}
-                        className="blue-button shadow-title w-full"
-                    >
-                        <span>Start Game</span>
-                    </Button>
-                </div>
-
-
+                <Button
+                    disabled={playerCount < 2}
+                    onClick={() => startGame()}
+                    className="blue-button shadow-title w-full"
+                >
+                    <span>Start Game</span>
+                </Button>
             </div>
 
             <div className="lobby-main">
                 <div className="lobby-main-item">
                     {/* Display Decks */}
-                    <h3 className="shadow-title">Choose a Deck</h3>
-
-                    <div className="grid grid-cols-3 gap-4">
-                        {decks.map(d => (
-                            <button
-                                key={d.id}
-                                onClick={() => chooseDeck(d.id)}
-                                className={`rounded p-1 ${d.id === deckId ? "ring-2 ring-green-500" : ""}`}
-
-                            >
-                                <img
-                                    src={getPublicUrl(d.cover_image)}
-                                    alt={d.name}
-                                />
-                            </button>
-                        ))}
-                    </div>
+                    <Picker
+                        items={deckItems}
+                        selectedId={deckId}
+                        onSelect={chooseDeck}
+                        rows={1}
+                    />
                 </div>
 
                 <div className="lobby-main-item">
                     {/* Display Cards */}
-                    <h3 className="shadow-title">Choose a Card</h3>
-                    <div className="grid grid-cols-6 gap-2">
-                        {cards.map(c => (
-                            <button
-                                key={c.id}
-                                onClick={() => chooseCard(c.id)}
-                                className={`rounded ${pickedCardId === c.id ? "ring-2 ring-blue-500" : ""}`}
-                            >
-                                <img
-                                    src={getPublicUrl(c.image)}
-                                    alt={c.name}
-                                />
-                            </button>
-                        ))}
-                    </div>
+                    <Picker
+                        items={cardItems}
+                        selectedId={pickedCardId}
+                        onSelect={chooseCard}
+                        rows={2}
+                    />
                 </div>
 
             </div>
