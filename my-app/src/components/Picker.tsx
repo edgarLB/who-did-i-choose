@@ -1,8 +1,9 @@
 "use client"
 import {useEffect, useRef, useState} from "react";
-
+import { ChevronLeft, ChevronRight, Shuffle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import IconButton from "@/components/IconButton";
 
 
 export interface PickerItem {
@@ -29,8 +30,9 @@ export default function Picker({
     const scrollRef = useRef<HTMLDivElement | null>(null);
 
     const [ selectedIMG, setSelectedIMG ] = useState<string | null>();
-    let left = "<"
+    let left = "ChevronLeft"
     let right = ">"
+    let title = rows === 1 ? "Deck" : "Card";
     const scrollBy = (sign: -1 | 1 ) => {
         if (!scrollRef.current) return;
         scrollRef.current.scrollBy({
@@ -53,24 +55,14 @@ export default function Picker({
         <div className="picker-container">
             <div className="flex items-center justify-between py-2">
                 <div className=" flex flex-row gap-5">
-                    <h3 className="shadow-title">Choose a Card</h3>
-                    <Button
-                        className="silver-button shadow-text">
-                        Random
-                    </Button>
+                    <h3 className="shadow-title">Choose a {title}</h3>
+                    <IconButton icon={Shuffle} variant="silver"/>
                 </div>
 
                 <div className="space-x-2">
-                    <Button
-                        onClick={() => scrollBy(-1)}
-                        className="blue-button shadow-text">
-                        {left}
-                    </Button>
-                    <Button
-                        onClick={() => scrollBy(1)}
-                        className="blue-button shadow-text">
-                        {right}
-                    </Button>
+
+                    <IconButton icon={ChevronLeft} variant="blue" onClick={() => scrollBy(-1)} />
+                    <IconButton icon={ChevronRight} variant="blue" onClick={() => scrollBy(1)} />
                 </div>
 
             </div>

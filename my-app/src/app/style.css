@@ -402,3 +402,104 @@ gr ease 0.1s;
     /*overflow: hidden;*/
 }
 
+.icon-button {
+    width: 48px;
+    height: 48px;
+    border-radius: 19px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+            transform 0.1s ease-in,
+            box-shadow 0.1s ease,
+            background 0.1s ease;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* Blue Variant */
+.icon-button.blue {
+    background: linear-gradient(#89F7FE, #66A6FF);
+    box-shadow: inset -0.5px -0.5px 0 #A1F5F6,
+    inset 0 0 0 #2D527C,
+    0 4px 0 #2D527C,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
+}
+
+.icon-button.blue:hover {
+    transform: translateY(4px);
+    box-shadow: inset -0.5px -0.5px 0 #A1F5F6,
+    inset 0 0 0 #2D527C,
+    0 0 0 #2D527C,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
+}
+
+.icon-button.blue:active {
+    background: linear-gradient(#66A6FF, #66A6FF);
+    box-shadow: inset -0.5px -0.5px 0 #A1F5F6,
+    inset 0 2px 0 #2D527C,
+    0 0 0 #2D527C,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
+}
+
+/* Silver Variant */
+.icon-button.silver {
+    background: linear-gradient(#C9EAFA, #9AB7D3);
+    box-shadow: inset -0.5px -0.5px 0 #DAEEE9,
+    inset 0 0 0 #2D527C,
+    0 4px 0 #537296,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
+}
+
+.icon-button.silver:hover {
+    transform: translateY(4px);
+    box-shadow: inset -0.5px -0.5px 0 #DAEEE9,
+    inset 0 0 0 #2D527C,
+    0 0 0 #2D527C,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
+}
+
+.icon-button.silver:active {
+    background: linear-gradient(#9AB7D3, #9AB7D3);
+    box-shadow: inset -0.5px -0.5px 0 #DAEEE9,
+    inset 0 2px 0 #537296,
+    0 0 0 #2D527C,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
+}
+
+
+.icon-wrapper {
+    font-size: 1em;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.lucide-outline,
+.lucide-top {
+    width: 2em;
+    height: 2em;
+    overflow: visible;
+}
+
+.lucide-outline {
+    stroke: black;
+    stroke-width: 6px;
+    fill: none;
+    z-index: 0;
+    position: absolute;
+    filter: none;
+}
+
+.lucide-top {
+    stroke: white;
+    stroke-width: 2.5px;
+    fill: none;
+    z-index: 1;
+    position: absolute;
+    filter: drop-shadow(0 4px 0 black);
+}

@@ -9,7 +9,9 @@ import {getPublicUrl} from "@/lib/getPublicUrl";
 import {useRouter} from "next/navigation";
 import {Label} from "@/components/ui/label";
 import {Separator} from "@/components/ui/separator";
+import { Link, Pencil, Check, X } from 'lucide-react';
 import Picker, { PickerItem } from "@/components/Picker";
+import IconButton from "@/components/IconButton";
 
 export default function LobbyClient({gameId, inviteCode, decks, deckId : intialDeckId, cards : intialCards} : {
     gameId: string;
@@ -261,7 +263,8 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                             <Label className="chunky-text">{inviteCode}</Label>
                         </div>
 
-                        <Button className="blue-button shadow-text">Join</Button>
+
+                        <IconButton icon={Link} variant="blue"/>
                     </div>
 
 
@@ -282,26 +285,19 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                                                     onChange={(e) => setTmpName(e.target.value)}
                                                     className="white-text-box bold-text-sma"
                                                 />
-                                                <Button
-                                                    className="silver-button shadow-text"
-                                                    onClick={() => setIsEditing(false)}
-                                                >
-                                                    X
-                                                </Button>
-                                                <Button className="blue-button shadow-text" onClick={saveScreenName}>
-                                                    Save
-                                                </Button>
+
+                                                <IconButton icon={X} variant="silver" onClick={() => setIsEditing(false)}/>
+                                                <IconButton icon={Check} variant="blue" onClick={saveScreenName}/>
                                             </div>
                                         ) : (
                                             <div
                                                 className="flex flex-row w-full justify-between gap-2 items-center p-[15px]">
                                                 <span className="shadow-text">{player.screen_name}</span>
-                                                <Button className="silver-button shadow-text" onClick={() => {
+
+                                                <IconButton icon={Pencil} variant="silver" onClick={() => {
                                                     setTmpName(player.screen_name);
                                                     setIsEditing(true);
-                                                }}>
-                                                    Edit
-                                                </Button>
+                                                }}/>
                                             </div>
 
                                         )
