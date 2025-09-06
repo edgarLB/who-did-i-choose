@@ -6,6 +6,7 @@ import CardBackIMG from "@/assets/images/back_temp.webp"
 import {supabase} from "@/lib/supabaseClient";
 import {Button} from "@/components/ui/button";
 import FlippingCard from "@/components/FlippingCard";
+import TransitionOverlay from "@/components/TransitionOverlay";
 
 export default function PlayClient({game, players, cards, chosenCardID}){
 
@@ -18,7 +19,7 @@ export default function PlayClient({game, players, cards, chosenCardID}){
     const [guessing, setGuessing] = useState(false);
     const [guessCardId, setGuessCardId] = useState<string | null>(null);
     const [guessResult, setGuessResult] = useState<"win" | "lose" | null>(null);
-
+    const [showOverlay, setShowOverlay] = useState(true);
 
 
     useEffect(() => {
@@ -172,7 +173,14 @@ export default function PlayClient({game, players, cards, chosenCardID}){
         <div className="flex flex-col items-center justify-center w-full h-full gap-5">
             {guessResult === "win" && <p>You win!</p>}
             {guessResult === "lose" && <p>Loser 🤣🫵</p>}
-
+            {/* Transition */}
+            {showOverlay && (
+                <TransitionOverlay
+                    playerName="Player 1"
+                    opponentName="Player 2"
+                    onComplete={() => setShowOverlay(true)}
+                />
+            )}
             <img className="max-h-[8em] object-contain" src="/images/logo.webp" alt="Who Did I Choose?" />
 
             {/*    My Board    */}

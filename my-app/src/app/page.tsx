@@ -19,6 +19,7 @@ import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {useState} from "react";
 import {supabase} from "@/lib/supabaseClient";
+import JoinGameInput from "@/components/JoinGameInput";
 
 
 /* ----- Utils ----*/
@@ -186,17 +187,7 @@ export default function Home() {
                                   <Input type="text" placeholder="Player 2" value={username} className="white-text-box chunky-text"
                                          onChange={(e) => setUsername(e.target.value)} />
                               </div>
-                              <div className="white-box-container flex flex-row gap-2 items-center">
-                                  <div>
-                                      <Label htmlFor="code" className="blue-text">Invite Code</Label>
-                                      <Input type="text" id="gameCode" placeholder="000-000" value={gameCode}
-                                             className="white-text-box chunky-text"
-                                             onChange={(e) => setGameCode(e.target.value)}/>
-
-                                  </div>
-                                  <Button onClick={() => joinGame(gameCode)} className="blue-button shadow-text"
-                                  >Join</Button>
-                                  </div>
+                              <JoinGameInput onJoin={joinGame} />
                           </CardContent>
                       </Card>
                   </TabsContent>

@@ -9,7 +9,7 @@ import {getPublicUrl} from "@/lib/getPublicUrl";
 import {useRouter} from "next/navigation";
 import {Label} from "@/components/ui/label";
 import {Separator} from "@/components/ui/separator";
-import { Link, Pencil, Check, X } from 'lucide-react';
+import { Copy, Pencil, Check, X } from 'lucide-react';
 import Picker, { PickerItem } from "@/components/Picker";
 import IconButton from "@/components/IconButton";
 
@@ -251,6 +251,14 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
         router.push(`/games/${inviteCode}/play`);
     }
 
+    function copyToClipboard(clip: String) {
+        navigator.clipboard.writeText(clip);
+    }
+
+    function prettyInviteCode(inviteCode: string) {
+        return [inviteCode.slice(0,3), inviteCode.slice(3)].join('-');
+    }
+
     return (
         <div className="lobby-container">
             <div className="lobby-side-bar">
@@ -260,11 +268,12 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                     <div className="white-box-container flex flex-row justify-between gap-2 items-center">
                         <div>
                             <Label className="blue-text">Invite Code</Label>
-                            <Label className="chunky-text">{inviteCode}</Label>
+                            <Label className="chunky-text">{prettyInviteCode(inviteCode)}</Label>
                         </div>
-
-
-                        <IconButton icon={Link} variant="blue"/>
+                        <IconButton
+                            icon={Copy}
+                            variant="blue"
+                            onClick={()=>copyToClipboard(inviteCode)}/>
                     </div>
 
 

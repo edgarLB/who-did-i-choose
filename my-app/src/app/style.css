@@ -2,8 +2,7 @@
 
 body {
     background-color: #D9AF8A;
-    background-image: url("/images/wood.png");
-    background-blend-mode: darken;
+    background-image: url("/images/wood_pattern_bg.webp");
     background-repeat: repeat;
     font-family: 'Grandstander', sans-serif;
 }
@@ -403,8 +402,8 @@ gr ease 0.1s;
 }
 
 .icon-button {
-    width: 48px;
-    height: 48px;
+    width: 50px;
+    height: 50px;
     border-radius: 19px;
     display: inline-flex;
     align-items: center;
@@ -413,7 +412,7 @@ gr ease 0.1s;
             transform 0.1s ease-in,
             box-shadow 0.1s ease,
             background 0.1s ease;
-    padding: 0;
+    /*padding: 1em;*/
     border: none;
     cursor: pointer;
     flex-shrink: 0;
@@ -484,6 +483,7 @@ gr ease 0.1s;
     width: 2em;
     height: 2em;
     overflow: visible;
+    padding: 0.1em;
 }
 
 .lucide-outline {
