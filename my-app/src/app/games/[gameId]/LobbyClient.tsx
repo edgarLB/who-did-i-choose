@@ -9,9 +9,11 @@ import {getPublicUrl} from "@/lib/getPublicUrl";
 import {useRouter} from "next/navigation";
 import {Label} from "@/components/ui/label";
 import {Separator} from "@/components/ui/separator";
-import { Copy, Pencil, Check, X } from 'lucide-react';
+import { Copy, Pencil, Check, X, User } from 'lucide-react';
 import Picker, { PickerItem } from "@/components/Picker";
 import IconButton from "@/components/IconButton";
+import UserIcon from "@/components/UserIcon";
+import PlayerRow from "@/components/PlayerRow";
 
 export default function LobbyClient({gameId, inviteCode, decks, deckId : intialDeckId, cards : intialCards} : {
     gameId: string;
@@ -25,6 +27,7 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
     const [cards, setCards] = useState(intialCards);
     const [pickedCardId, setPickedCardId] = useState<string | null>(null);
     const [players, setPlayers] = useState<{ id: string; screen_name: string }[]>([]);
+    const [copiedCode, setCopiedCode] = useState<boolean>(false);
     const [isEditing, setIsEditing] = useState(false);
     const [tmpName, setTmpName] = useState("");
     const localPlayerId = getLocalPlayerId();
@@ -253,6 +256,10 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
 
     function copyToClipboard(clip: String) {
         navigator.clipboard.writeText(clip);
+        setCopiedCode(true);
+        setTimeout(() => {
+            setCopiedCode(false);
+        }, 1500)
     }
 
     function prettyInviteCode(inviteCode: string) {
@@ -271,57 +278,36 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                             <Label className="chunky-text">{prettyInviteCode(inviteCode)}</Label>
                         </div>
                         <IconButton
-                            icon={Copy}
+                            icon={copiedCode ? Check : Copy}
                             variant="blue"
                             onClick={()=>copyToClipboard(inviteCode)}/>
                     </div>
 
 
                 </div>
-                <div className="players-container">
-                <h3 className="shadow-title">Players</h3>
                     {/* Display Players List */}
-                    <div className="players-card card-br">
+                    <div className="players-card card-br" >
+                        <h3 className="shadow-title pb-2">Players</h3>
 
                         <ul className="space-y-1">
                             {players.map((player) => (
-                                <li key={player.id} className="flex items-center gap-2">
-                                    {player.id === localPlayerId ? (
-                                        isEditing ? (
-                                            <div className="white-box-container flex flex-row gap-2 items-center">
-                                                <Input
-                                                    value={tmpName}
-                                                    onChange={(e) => setTmpName(e.target.value)}
-                                                    className="white-text-box bold-text-sma"
-                                                />
-
-                                                <IconButton icon={X} variant="silver" onClick={() => setIsEditing(false)}/>
-                                                <IconButton icon={Check} variant="blue" onClick={saveScreenName}/>
-                                            </div>
-                                        ) : (
-                                            <div
-                                                className="flex flex-row w-full justify-between gap-2 items-center p-[15px]">
-                                                <span className="shadow-text">{player.screen_name}</span>
-
-                                                <IconButton icon={Pencil} variant="silver" onClick={() => {
-                                                    setTmpName(player.screen_name);
-                                                    setIsEditing(true);
-                                                }}/>
-                                            </div>
-
-                                        )
-
-                                    ) : (
-                                        <span className="shadow-text p-[15px]">{player.screen_name}</span>
-                                    )}
-                                </li>
+                                <PlayerRow
+                                    key={player.id}
+                                    player={player}
+                                    isLocal={player.id === localPlayerId}
+                                    isEditing={isEditing}
+                                    tmpName={tmpName}
+                                    setTmpName={setTmpName}
+                                    setIsEditing={setIsEditing}
+                                    saveScreenName={saveScreenName}
+                                />
                             ))}
+
+                            {/* If less than 2 players, render placeholder slot */}
+                            {playerCount < 2 && <PlayerRow />}
                         </ul>
-                        {playerCount < 2 ? (
-                            <p className="shadow-text p-[15px] separate text-center">Waiting for the other player…</p>
-                        ) : null}
                     </div>
-                </div>
+
 
 
                 <Button
