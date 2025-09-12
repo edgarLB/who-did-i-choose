@@ -47,7 +47,7 @@ export default function JoinGameInput({onJoin}: JoinGameInputProps) {
 
             </div>
             <Button onClick={handleJoin} className="blue-button shadow-text">
-                Join
+                Go
             </Button>
         </div>
 

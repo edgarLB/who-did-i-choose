@@ -11,11 +11,13 @@ button {
 }
 
 .logo-home{
-    width: 25em;
+    width: 100%;
+    max-width: 25em;
+    padding: 0 1em;
 }
 
 .card-title {
-    font-size: clamp(20px, 8vw, 32px);
+    font-size: clamp(20px, 7vw, 32px);
     font-weight: bold;
     color: white;
     -webkit-text-stroke: 4px black;
@@ -27,7 +29,7 @@ button {
     background-color: #F3CAA7;
     border-radius: 2em;
     border-width: 0;
-    box-shadow: inset 6px 7px 0 #9E7B67,
+    box-shadow: inset 2px 2px 0 #9E7B67,
     1px 1px 0 rgba(255, 255, 255, 0.5);
 }
 
@@ -195,7 +197,7 @@ gr ease 0.1s;
     background-color: #D9AF8A;
     border-radius: 17px;
     border-width: 0;
-    box-shadow: inset 6px 7px 0 rgba(130, 91, 79, .49),
+    box-shadow: inset 2px 2px 0 rgba(130, 91, 79, .49),
     1px 1px 0 rgba(255, 255, 255, 0.5);
 }
 
@@ -613,4 +615,9 @@ gr ease 0.1s;
         justify-self: center;
         margin: 0.5em auto;
     }
+
+    .card-content {
+        padding: 0em 0.5em;
+    }
+
 }

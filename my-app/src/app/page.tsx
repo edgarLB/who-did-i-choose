@@ -148,10 +148,10 @@ export default function Home() {
     }
 
   return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen m-2">
           <div className="flex flex-col gap-10 text-center justify-center">
               <img src="/images/logo.webp" className="logo-home mx-auto" alt="Who Did I Choose?"/>
-              <Tabs defaultValue={tab1} className="w-[600px]">
+              <Tabs defaultValue={tab1}>
                   <TabsList className="grid w-full h-full p-2 grid-cols-2 tab-list">
                       <TabsTrigger className="tab-item shadow-text" value={tab1}>{tab1}</TabsTrigger>
                       <TabsTrigger className="tab-item shadow-text" value={tab2}>{tab2}</TabsTrigger>
@@ -161,7 +161,7 @@ export default function Home() {
                           <CardHeader>
                               <CardTitle className="card-title">{tab1} a New Game</CardTitle>
                           </CardHeader>
-                          <CardContent>
+                          <CardContent className="card-content">
                               <div className="white-box-container flex flex-row gap-2 items-center">
                                   <div>
                                       <Label className="blue-text" htmlFor="name">Name</Label>
@@ -171,7 +171,7 @@ export default function Home() {
                                   </div>
                                       <Button
                                       onClick={createGame} className="blue-button shadow-text"
-                                  >Create</Button>
+                                  >Go</Button>
                               </div>
                           </CardContent>
                       </Card>
@@ -181,7 +181,7 @@ export default function Home() {
                           <CardHeader>
                               <CardTitle className="card-title">{tab2} an Existing Game</CardTitle>
                           </CardHeader>
-                          <CardContent className="space-y-5">
+                          <CardContent className="space-y-5 card-content">
                               <div className="white-box-container">
                                   <Label htmlFor="name" className="blue-text">Name</Label>
                                   <Input type="text" placeholder="Player 2" value={username} className="white-text-box chunky-text"
