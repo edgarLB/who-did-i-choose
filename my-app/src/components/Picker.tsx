@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Shuffle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import IconButton from "@/components/IconButton";
+import {it} from "node:test";
 
 
 export interface PickerItem {
@@ -16,7 +17,7 @@ interface PickerProps {
     items: PickerItem[];
     selectedId: string | null;
     onSelect: (id: string) => void;
-    rows: 1 | 2;
+    type: 1 | 2;
     className?: string;
 }
 
@@ -24,23 +25,13 @@ export default function Picker({
                                    items,
                                    selectedId,
                                    onSelect,
-                                   rows = 1,
+                                   type = 1,
                                    className,
                                } : PickerProps) {
     const scrollRef = useRef<HTMLDivElement | null>(null);
 
     const [ selectedIMG, setSelectedIMG ] = useState<string | null>();
-    let left = "ChevronLeft"
-    let right = ">"
-    let title = rows === 1 ? "Deck" : "Card";
-    const scrollBy = (sign: -1 | 1 ) => {
-        if (!scrollRef.current) return;
-        scrollRef.current.scrollBy({
-            left: sign * scrollRef.current.clientWidth,
-            behavior: "smooth",
-        });
-
-    };
+    let title = type === 1 ? "Deck" : "Card";
 
     useEffect(() => {
         if (!selectedId) return;
@@ -52,43 +43,38 @@ export default function Picker({
 
 
     return (
-        <div className="picker-container">
-            <div className="flex items-center justify-between py-2">
+        <div className="picker-container card-br">
+            <div className="flex items-center justify-between">
                 <div className=" flex flex-row gap-5">
-                    <h3 className="shadow-title">Choose a {title}</h3>
-                    <IconButton icon={Shuffle} variant="silver"/>
+                    <h3 className="shadow-text">Choose a {title}</h3>
+                    {/*<IconButton icon={Shuffle} variant="silver"/>*/}
                 </div>
-
-                <div className="space-x-2">
-
-                    <IconButton icon={ChevronLeft} variant="blue" onClick={() => scrollBy(-1)} />
-                    <IconButton icon={ChevronRight} variant="blue" onClick={() => scrollBy(1)} />
-                </div>
-
             </div>
-
-            {/* scrolling track */}
-            <div className="flex flex-row gap-5 h-full">
-                <div
-                    className="h-full aspect-[3/4] flex-shrink-0 flex items-center justify-center rounded-[2em] bg-white/20">
-                    {selectedIMG ? (
-                        <img
-                            src={selectedIMG}
-                            className="h-full w-auto object-contain rounded-[2em]"
-                            alt=""
-                        />
-                    ) : (
-                        <div className="w-full h-full"/>
-                    )}
+            {type === 1 ?
+                <div className="deck-container">
+                    {items.map((it) => (
+                        <Button
+                            key={it.id}
+                            onClick={() => {
+                                onSelect(it.id)
+                                setSelectedIMG(it.image)
+                            }}
+                            className={cn(
+                                "deck-button bold-text-sma",
+                                selectedId === it.id ? "ring ring-white" : "",
+                            )}
+                        >
+                            {it.label}
+                        </Button>
+                        ))}
                 </div>
-
-                <div
+                : <div
                     ref={scrollRef}
                     className={cn(
                         "grid snap-x snap-mandatory overflow-x-auto scroll-smooth gap-2",
                         "grid-flow-col auto-cols-[minmax(100px,210px)]",
-                        rows === 2 ? "grid-rows-2" : "grid-rows-1",
-                        "card-br p-5 flex-grow"
+                        type === 2 ? "grid-rows-3" : "grid-rows-1",
+                        "flex-grow overflow-visible"
                     )}
                 >
                     {items.map((it) => (
@@ -99,7 +85,7 @@ export default function Picker({
                                 setSelectedIMG(it.image)
                             }}
                             className={cn(
-                                "aspect-[3/4] h-full w-auto", "ring-offset-2 transition-[transform] hover:scale-105 rounded-xl overflow-hidden",
+                                "aspect-[3/4] h-full w-auto", "ring-offset-2 transition-[scale] hover:scale-105 rounded-xl overflow-hidden",
                                 selectedId === it.id ? "ring ring-blue-500" : "",
                             )}
                         >
@@ -111,7 +97,7 @@ export default function Picker({
                         </button>
                     ))}
                 </div>
-            </div>
+            }
 
         </div>
     );

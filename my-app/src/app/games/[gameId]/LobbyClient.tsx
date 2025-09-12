@@ -287,7 +287,7 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                 </div>
                     {/* Display Players List */}
                     <div className="players-card card-br" >
-                        <h3 className="shadow-title pb-2">Players</h3>
+                        <h3 className="shadow-text pb-2">Players</h3>
 
                         <ul className="space-y-1">
                             {players.map((player) => (
@@ -313,7 +313,7 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                 <Button
                     disabled={playerCount < 2}
                     onClick={() => startGame()}
-                    className="blue-button shadow-title w-full"
+                    className="blue-button shadow-title"
                 >
                     <span>Start Game</span>
                 </Button>
@@ -326,7 +326,7 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                         items={deckItems}
                         selectedId={deckId}
                         onSelect={chooseDeck}
-                        rows={1}
+                        type={1}
                     />
                 </div>
 
@@ -336,7 +336,7 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                         items={cardItems}
                         selectedId={pickedCardId}
                         onSelect={chooseCard}
-                        rows={2}
+                        type={2}
                     />
                 </div>
 

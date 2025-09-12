@@ -15,7 +15,7 @@ button {
 }
 
 .card-title {
-    font-size: 32px;
+    font-size: clamp(20px, 8vw, 32px);
     font-weight: bold;
     color: white;
     -webkit-text-stroke: 4px black;
@@ -37,6 +37,7 @@ button {
     box-shadow: inset 2px 2px 0 #9E7B67,
     1px 1px 0 rgba(255, 255, 255, 0.5);
     border-radius: 2em;
+    padding: 1em;
 }
 
 .white-box-container {
@@ -175,7 +176,7 @@ gr ease 0.1s;
 }
 
 .shadow-title {
-    font-size: 24px;
+    font-size: 32px;
     font-weight: bold;
     color: white;
     -webkit-text-stroke: 4px black;
@@ -344,9 +345,7 @@ gr ease 0.1s;
     justify-content: space-between;
 }
 
-.players-container {
 
-}
 
 .players-card {
     padding: 1em;
@@ -357,7 +356,7 @@ gr ease 0.1s;
     grid-template-columns: 0.3fr 1fr;
     gap: 1em;
     width: 100%;
-    height: 100vh;
+    /*height: 100vh;*/
     max-height: 800px;
     align-items: center;
     justify-content: center;
@@ -369,7 +368,7 @@ gr ease 0.1s;
     flex-direction: column;
     height: 100%;
     gap: 1em;
-    justify-content: center;
+    justify-content: space-between;
     /*background-color: deeppink;*/
 
 }
@@ -378,16 +377,13 @@ gr ease 0.1s;
     display: flex;
     flex-direction: column;
     height: 100%;
-    /*gap: 0em;*/
+    gap: 1em;
     overflow: hidden;
+    justify-content: center;
     /*background-color: pink;*/
 
 }
 
-.lobby-main-item {
-    flex: 1;
-    /*background-color: green;*/
-}
 
 .separate {
     margin-top: 0.5em;
@@ -399,7 +395,7 @@ gr ease 0.1s;
     flex-direction: column;
     width: 100%;
     height: 100%;
-    padding: 0.5em;
+    /*padding: 0.5em;*/
     /*overflow: hidden;*/
 }
 
@@ -418,6 +414,32 @@ gr ease 0.1s;
     border: none;
     cursor: pointer;
     flex-shrink: 0;
+}
+
+.deck-container {
+    display: grid;
+    gap: 0.5em;
+    width: 100%;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.deck-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #2D527C;
+    border-radius: 0.5em;
+    color: #2D527C;
+    background-color: rgba(45, 82, 124, 0.3);
+    font-weight: bold;
+    width: 100%;
+    transition: all 0.2s ease;
+    padding: 0.5em 1em;
+}
+
+.deck-button:hover {
+    background-color: #2D527C;
+    color: white;
 }
 
 /* Blue Variant */
@@ -517,6 +539,8 @@ gr ease 0.1s;
     transform: translateY(-3px);
 }
 
+
+
 @media (min-width: 483px) and (max-width: 1024px) {
     .lobby-container {
         grid-template-columns: 1fr;
@@ -545,7 +569,7 @@ gr ease 0.1s;
     .lobby-logo {
         grid-column: 1;
         width: 100%;
-        max-width: 22em;
+        max-width: 20em;
         height: auto;
         justify-self: start;
     }
