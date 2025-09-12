@@ -271,7 +271,7 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
             <div className="lobby-side-bar">
 
                 <div className="space-y-5 w-full">
-                    <img src="/images/logo.webp" alt="Who Did I Choose?"/>
+                    <img src="/images/logo.webp" className="lobby-logo" alt="Who Did I Choose?"/>
                     <div className="white-box-container flex flex-row justify-between gap-2 items-center">
                         <div>
                             <Label className="blue-text">Invite Code</Label>

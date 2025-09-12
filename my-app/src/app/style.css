@@ -516,3 +516,77 @@ gr ease 0.1s;
 .user-circle svg {
     transform: translateY(-3px);
 }
+
+@media (min-width: 483px) and (max-width: 1024px) {
+    .lobby-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        height: auto;
+        max-height: none;
+    }
+
+    .lobby-side-bar {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1em;
+        align-items: start;
+    }
+
+    .lobby-side-bar > .space-y-5 {
+        display: grid;
+        grid-template-columns: 50% minmax(0, 1fr);
+        gap: 1em;
+        align-items: center;
+        justify-items: self-end;
+        width: 100%;
+        /*background: #2D527C;*/
+    }
+
+    .lobby-logo {
+        grid-column: 1;
+        width: 100%;
+        max-width: 22em;
+        height: auto;
+        justify-self: start;
+    }
+
+    .lobby-side-bar .white-box-container {
+        grid-column: 2;
+        width: 100%;
+        max-width: 22em;
+    }
+
+    .lobby-side-bar > .players-card,
+    .lobby-side-bar > .blue-button {
+        grid-column: 1;
+        width: 100%;
+    }
+
+}
+
+
+@media (max-width: 482px) {
+    .lobby-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        height: auto;
+        max-height: none;
+    }
+
+    .lobby-side-bar {
+        justify-self: center;
+        order: 1;
+        width: 100%;
+    }
+
+    .lobby-main {
+        order: 2;
+    }
+
+    .lobby-logo {
+        max-width: 70vw;
+        align-self: center;
+        justify-self: center;
+        margin: 0.5em auto;
+    }
+}
