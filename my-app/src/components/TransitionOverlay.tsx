@@ -20,8 +20,8 @@ export default function TransitionOverlay({
             <motion.div
                 className="absolute top-0 left-0 w-full h-1/2 bg-[#2728BE] flex items-center justify-center text-white text-2xl font-bold"
                 initial={{ y: 0 }}
-                // animate={{ y: "-100%" }}
-                // transition={{ delay: 1, duration: 0.5, ease: "easeInOut" }}
+                animate={{ y: "-100%" }}
+                transition={{ delay: 1, duration: 0.5, ease: "easeInOut" }}
                 onAnimationComplete={onComplete}
             >
                 <span className="shadow-title">{playerName}</span>
@@ -31,8 +31,8 @@ export default function TransitionOverlay({
             <motion.div
                 className="absolute bottom-0 left-0 w-full h-1/2 bg-[#D73A3A] flex items-center justify-center text-white text-2xl font-bold"
                 initial={{ y: 0 }}
-                // animate={{ y: "100%" }}
-                // transition={{ delay: 1, duration: 0.5, ease: "easeInOut" }}
+                animate={{ y: "100%" }}
+                transition={{ delay: 1, duration: 0.5, ease: "easeInOut" }}
             >
                 <span className="shadow-title">{opponentName}</span>
             </motion.div>

@@ -38,8 +38,13 @@ button {
     border-width: 0;
     box-shadow: inset 2px 2px 0 #9E7B67,
     1px 1px 0 rgba(255, 255, 255, 0.5);
-    border-radius: 2em;
+    border-radius: 1em;
     padding: 1em;
+}
+
+.folder-card .card-br {
+    border-top-right-radius: 0;
+
 }
 
 .white-box-container {
@@ -72,83 +77,96 @@ button {
     font-size: 24px;
 }
 
-.blue-button {
+.button {
     border-radius: 19px;
     padding: 1em;
+    transition: transform ease-in 0.1s,
+                box-shadow ease-in 0.1s;
+    box-shadow: -1px -1px 3.5px rgba(0,0,0, 0.1);
+}
+
+.button:hover {
+    transform: translateY(4px);
+}
+
+.button span {
+    transform: translateY(0);
+    /*transition: transform ease-in 0.1s,;*/
+}
+
+.button:active span {
+    transform: translateY(2px);
+}
+
+.button.blue {
     background: linear-gradient(#89F7FE, #66A6FF);
     box-shadow: inset -0.5px -0.5px 0 #A1F5F6,
     inset 0 0 0 #2D527C,
-    0 4px 0 #2D527C, -1px -1px 3.5px rgba(0,0,0, 0.1);
-    transition: all ease-in 0.1s,
-gr ease 0.1s;
-    /*scale: 110%;*/
+    0 4px 0 #2D527C,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
 }
 
-.blue-button:hover {
-    transform: translateY(4px);
+.button.blue:hover {
     box-shadow: inset -0.5px -0.5px 0 #A1F5F6,
     inset 0 0 0 #2D527C,
-    0 0 0 #2D527C, -1px -1px 3.5px rgba(0,0,0, 0.1);
-
+    0 0 0 #2D527C,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
 }
 
-.blue-button:active {
-    background: linear-gradient(#66A6FF, #66A6FF);
+.button.blue:active {
+    background: #66A6FF;
     box-shadow: inset -0.5px -0.5px 0 #A1F5F6,
     inset 0 2px 0 #2D527C,
-    0  0 0 #2D527C,
-    -1px -1px 3.5px rgba(0,0,0, 0.1);
+    0 0 0 #2D527C,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
 }
 
-.blue-button span {
-    /*color: white;*/
-    transform: translateY(0);
-    transition: all ease-in 0.1s;
+.button.red {
+    background: linear-gradient(#FE6769, #E83D40);
+    box-shadow: inset -0.5px -0.5px 0 #FF9496,
+    inset 0 0 0 #812123,
+    0 4px 0 #812123,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
 }
 
-.blue-button:active span{
-    /*color: lightgray;*/
-    transform: translateY(2px);
+.button.red:hover {
+    box-shadow: inset -0.5px -0.5px 0 #FF9496,
+    inset 0 0 0 #812123,
+    0 0 0 #812123,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
 }
 
-.silver-button {
-    border-radius: 19px;
-    padding: 1em;
+.button.red:active {
+    background: #E83D40;
+    box-shadow: inset -0.5px -0.5px 0 #FF9496,
+    inset 0 2px 0 #812123,
+    0 0 0 #812123,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
+}
+
+.button.silver {
     background: linear-gradient(#C9EAFA, #9AB7D3);
     box-shadow: inset -0.5px -0.5px 0 #DAEEE9,
     inset 0 0 0 #2D527C,
-    0 4px 0 #537296, -1px -1px 3.5px rgba(0,0,0, 0.1);
-    transition: all ease-in 0.1s,
-    gr ease 0.1s;
-    /*scale: 110%;*/
+    0 4px 0 #537296,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
 }
 
-.silver-button:hover {
-    transform: translateY(4px);
+.button.silver:hover {
     box-shadow: inset -0.5px -0.5px 0 #DAEEE9,
     inset 0 0 0 #2D527C,
-    0 0 0 #2D527C, -1px -1px 3.5px rgba(0,0,0, 0.1);
-
+    0 0 0 #2D527C,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
 }
 
-.silver-button:active {
-    background: linear-gradient(#9AB7D3, #9AB7D3);
+.button.silver:active {
+    background: #9AB7D3;
     box-shadow: inset -0.5px -0.5px 0 #DAEEE9,
     inset 0 2px 0 #537296,
-    0  0 0 #2D527C,
-    -1px -1px 3.5px rgba(0,0,0, 0.1);
+    0 0 0 #2D527C,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
 }
 
-.silver-button span {
-    /*color: white;*/
-    transform: translateY(0);
-    transition: all ease-in 0.1s;
-}
-
-.silver-button:active span{
-    /*color: lightgray;*/
-    transform: translateY(2px);
-}
 
 .play-guess-button {
     border-radius: 20px;
@@ -227,7 +245,7 @@ gr ease 0.1s;
     width: 100%;
     height: 100%;
     backface-visibility: hidden;
-    border-radius: 1em;
+    border-radius: 0.6em;
     overflow: hidden;
 }
 
@@ -257,20 +275,59 @@ gr ease 0.1s;
     cursor: default;
 }
 
+.game-logo {
+    position: relative;
+    max-width: 48vw;
+    max-height: 6em;
+    object-fit: contain;
+    align-self: flex-start;
+    top: 0.8em;
+    left: 1em;
+}
+
 .play-gameboard-container {
     display: flex;
     flex-direction: column;
     gap: 1em;
-    padding: 2em 1em;
     text-align: center;
     height: 100%;
     width: 100%;
 }
-.grid-8{
+
+.folder-card {
+    position: relative;
+}
+
+.folder-tab {
+    position: absolute;
+    top: -2.4em;
+    right: 0;
+    margin: 0;
+    padding: 0.5em 1em;
+    background-color: #F3CAA7;
+    border-radius: 1em 1em 0 0;
+    box-shadow: inset 2px 2px 0 #9E7B67,
+    0 1px 0 #F3CAA7,
+    1px 1px 0 rgba(255, 255, 255, 0.5);
+    font-weight: bold;
+    font-size: 1.1em;
+    white-space: nowrap;
+}
+
+.gameboard{
     display: grid;
     grid-template-columns: repeat(8, minmax(0, 1fr));
     gap: 0.4em;
-    row-gap: 0.4em;
+    row-gap: 0;
+}
+
+
+
+.enemy-board {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.3em;
+    row-gap: 0;
 }
 
 .endturn-srn-lg-container{
@@ -618,6 +675,22 @@ gr ease 0.1s;
 
     .card-content {
         padding: 0em 0.5em;
+    }
+
+    .card-br {
+        padding: 1em 0.5em;
+    }
+
+    .gameboard{
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .gameboard > .card:nth-last-child(-n+5) {
+        justify-self: center;
+    }
+
+    .game-logo {
+        left: 0.5em;
     }
 
 }
