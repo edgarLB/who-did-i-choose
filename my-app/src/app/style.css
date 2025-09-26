@@ -77,6 +77,26 @@ button {
     font-size: 24px;
 }
 
+.simple-button {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(#89F7FE, #66A6FF);
+    padding: 0.2em;
+    box-shadow: inset -0.5px -0.5px 0 #A1F5F6,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
+    border-radius: 0.5em;
+    font-size: clamp(1em, 3vw, 1.5em);
+    font-weight: bold;
+    color: white;
+    -webkit-text-stroke: 2px black;
+    text-shadow: 0 1px 0 black;
+    paint-order: stroke fill;
+}
+.simple-button:hover {
+    background: linear-gradient(#66A6FF, #89F7FE);
+    box-shadow: inset 0.5px 0.5px 0 #A1F5F6;
+}
+
 .button {
     border-radius: 19px;
     padding: 1em;
@@ -168,24 +188,6 @@ button {
 }
 
 
-.play-guess-button {
-    border-radius: 20px;
-    padding: 0.4em 0.4em 0.4em 0.4em;
-    background: linear-gradient(#89F7FE, #66A6FF);
-    box-shadow: inset -0.5px -0.5px 0 #A1F5F6,
-    0 0.5rem 0 #2D527C, -1px -1px 3.5px rgba(0,0,0, 0.1);
-    transition: ease-in 0.1s;
-    height: calc(100% - 0.5rem);
-    margin-bottom: 0.5rem;
-
-}
-
-.play-guess-button:hover {
-    transform: translateY(4px);
-    box-shadow: inset -0.5px -0.5px 0 #A1F5F6,
-    0 0 0 #2D527C, -1px -1px 3.5px rgba(0,0,0, 0.1);
-}
-
 .shadow-text {
     font-size: 24px;
     font-weight: bold;
@@ -245,8 +247,14 @@ button {
     width: 100%;
     height: 100%;
     backface-visibility: hidden;
-    border-radius: 0.6em;
+    border-radius: clamp(0.6em, 1.2vw, 1em);
     overflow: hidden;
+    transition: scale ease-in 0.2s;
+}
+
+.card-face:hover {
+
+    scale: 104%;
 }
 
 .card-face img {
@@ -270,6 +278,50 @@ button {
     opacity: 0;
     transition: opacity 0.5s ease;
 }
+.guess-card-container {
+    position: relative;
+    z-index: 1;
+    transition: scale ease-in 0.2s;
+}
+
+.guess-card-container:hover {
+    scale: 104%;
+}
+
+.guess-card-container:active {
+    scale: 91%;
+}
+
+.guess-card-container.expanded {
+    z-index: 50;
+}
+
+.guess-card-container img {
+    display: block;
+    width: 100%;
+    border-radius: clamp(0.6em, 1.2vw, 1em);
+}
+
+.guess-card-overlay {
+    opacity: 1;
+    position: absolute;
+    top: -0.2em;
+    left: -0.2em;
+    right: -0.2em;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5em;
+
+    background-color: rgba(230, 32, 35, 0.5);
+    backdrop-filter: blur(5px);
+    border: 1px solid #FFA3AF;
+    box-shadow: 0 0 4px #FFA3AF;
+    padding: 0.5em;
+    border-radius: 0.8em;
+}
+
 
 .no-point {
     cursor: default;
@@ -322,14 +374,6 @@ button {
 }
 
 
-
-.enemy-board {
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 0.3em;
-    row-gap: 0;
-}
-
 .endturn-srn-lg-container{
     position: relative;
     width: min-content;
@@ -345,49 +389,38 @@ button {
     1px 1px 0 rgba(255, 255, 255, 0.5);
 }
 
+.game-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+    height: 14em;
+    gap: 1em;
+    pointer-events: none;
+    /*background-color: #66A6FF;*/
+}
+
 .play-chosen-card{
     aspect-ratio: 3 / 4;
     object-fit: contain;
-    display: block;
+    height: 100%;
     border-radius: 1em;
 
 }
 
-
-.game-area {
+.enemy-board {
     display: grid;
-    grid-template-columns: 1fr 55.12% 1fr;
-    gap: 0.5em;
-    width: 100%;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 0.3em;
+    /*background-color: #812123;*/
     height: 100%;
-    align-items: center;
+    align-content: stretch;
 }
 
-.guess-button{
-    display: grid;
-    grid-template-rows: 88% 1fr;
-    padding-bottom: 0.5em;
+.enemy-board > div {
+    aspect-ratio: 3 / 4;
     height: 100%;
-    width: 100%;
-}
-.guess-button-user {
-    position: relative;
-    height: 100%;
-    width: 100%;
-    background: radial-gradient(#66CEFC, #4293E5);
-    border-radius: 0.5em;
-    overflow: hidden;
-}
-
-.guess-user-svg {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    height: auto;
-    max-height: 90%;
-    mix-blend-mode: luminosity;
 }
 
 .endturn-logo {
@@ -404,8 +437,6 @@ button {
     justify-content: space-between;
 }
 
-
-
 .players-card {
     padding: 1em;
 }
@@ -414,7 +445,7 @@ button {
     display: grid;
     grid-template-columns: 0.3fr 1fr;
     gap: 1em;
-    width: 100%;
+    max-width: 100%;
     /*height: 100vh;*/
     max-height: 800px;
     align-items: center;
@@ -645,6 +676,9 @@ button {
         width: 100%;
     }
 
+    .gameboard {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
 }
 
 
@@ -683,14 +717,26 @@ button {
 
     .gameboard{
         grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
-
-    .gameboard > .card:nth-last-child(-n+5) {
-        justify-self: center;
+        gap: 0.2em;
     }
 
     .game-logo {
         left: 0.5em;
     }
+
+    .guess-card-overlay {
+        padding: 0.1em;
+        gap: 0.2em;
+        border-radius: 0.5em;
+    }
+
+    .game-area {
+        height: 11em;
+    }
+
+    .enemy-board {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        }
 
 }

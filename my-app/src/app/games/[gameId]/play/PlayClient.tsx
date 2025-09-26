@@ -169,6 +169,11 @@ export default function PlayClient({game, players, cards, chosenCardID}){
         }
     }
 
+    function handleNVM() {
+        setGuessing(false);
+        setGuessCardId(null);
+    }
+
     return(
         <div className="flex flex-col items-center justify-center w-full h-full gap-5">
             {guessResult === "win" && <p>You win!</p>}
@@ -187,51 +192,67 @@ export default function PlayClient({game, players, cards, chosenCardID}){
             <div className="play-gameboard-container folder-card">
                 <h2 className="folder-tab shadow-title">{isMyTurn ? "Your Turn" : "Opponent's Turn"}</h2>
                 <div className="card-br">
-                <div className="gameboard">
-                    {cards.map(c => (
-                        <div key={c.id} className="relative">
-                            {guessing ? (
-                                // Guessing Mode
-                                <>
-                                    {/*render cards normally*/}
-                                    <button
-                                        onClick={() => setGuessCardId(c.id)}>
-                                        <img
-                                            // className=""
-                                            src={myFlipped[c.id] ? "/images/back_temp.webp" : getPublicUrl(c.image)}
-                                            alt={c.name}
-                                        />
-                                    </button>
-                                    {/* show confirm button on card user guesses */}
-                                    {guessCardId === c.id && (
-                                        <button
-                                            className="absolute inset-0 flex items-center justify-center bg-black text-white font-bold"
-                                            onClick={handleGuessConfirm}
+                    <div className="gameboard">
+                        {cards.map(c => {
+                            const isGuessed = guessCardId === c.id;
+
+                            return (
+                                <div key={c.id} className="relative">
+                                    {guessing ? (
+                                        <div
+                                            className={`guess-card-container ${guessCardId === c.id ? "expanded" : ""}`}
                                         >
-                                            Confirm
-                                        </button>
-                                    )
+                                            <button onClick={() => setGuessCardId(c.id)}>
+                                                <img
+                                                    className="emboss"
+                                                    src={
+                                                        myFlipped[c.id]
+                                                            ? "/images/back_temp.webp"
+                                                            : getPublicUrl(c.image)
+                                                    }
+                                                    alt={c.name}
+                                                />
+                                            </button>
 
-                                    }
-                                </>
+                                            {guessCardId === c.id && (
+                                                <div className="guess-card-overlay">
+                                                    <img
+                                                        src={
+                                                            myFlipped[c.id]
+                                                                ? "/images/back_temp.webp"
+                                                                : getPublicUrl(c.image)
+                                                        }
+                                                        alt={c.name}
+                                                    />
+                                                    <Button
+                                                        className="simple-button"
+                                                        onClick={() => handleGuessConfirm()}
+                                                    >
+                                                        GUESS
+                                                    </Button>
+                                                </div>
 
-                            ) : (
-                                <FlippingCard
-                                    frontImage={getPublicUrl(c.image)}
-                                    alt={c.name}
-                                    onClick={() => toggleFlip(c.id)}
-                                    flipped={myFlipped[c.id]}/>
-                            )}
-                        </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <FlippingCard
+                                            frontImage={getPublicUrl(c.image)}
+                                            alt={c.name}
+                                            onClick={() => toggleFlip(c.id)}
+                                            flipped={myFlipped[c.id]}
+                                        />
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
 
-                    ))}
-                </div>
 
                     { !isMyTurn ? (
                         <h2 className="shadow-text">Waiting...</h2>
                     ) : guessing ? (
                         <Button
-                            onClick={() => setGuessing(false)}
+                            onClick={() => handleNVM()}
                         className="button silver shadow-text">Never mind</Button>
                     ) : (
                         <div className="space-x-2">
@@ -251,7 +272,7 @@ export default function PlayClient({game, players, cards, chosenCardID}){
 
             </div>
 
-                <div className="game-area h-full w-full">
+                <div className="game-area">
                     <img className="play-chosen-card emboss" src={getPublicUrl(cards.find((c) => c.id === chosenCardID)?.image)}/>
                     {/*    Enemy's Board    */}
                     <div className="enemy-board">

@@ -313,7 +313,7 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                 <Button
                     disabled={playerCount < 2}
                     onClick={() => startGame()}
-                    className="blue-button shadow-title"
+                    className="button blue shadow-title"
                 >
                     <span>Start Game</span>
                 </Button>

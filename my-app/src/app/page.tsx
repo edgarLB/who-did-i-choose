@@ -170,7 +170,7 @@ export default function Home() {
 
                                   </div>
                                       <Button
-                                      onClick={createGame} className="blue-button shadow-text"
+                                      onClick={createGame} className="button blue shadow-text"
                                   >Go</Button>
                               </div>
                           </CardContent>
