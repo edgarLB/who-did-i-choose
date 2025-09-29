@@ -7,6 +7,7 @@ import {supabase} from "@/lib/supabaseClient";
 import {Button} from "@/components/ui/button";
 import FlippingCard from "@/components/FlippingCard";
 import TransitionOverlay from "@/components/TransitionOverlay";
+import { motion } from "framer-motion";
 
 export default function PlayClient({game, players, cards, chosenCardID}){
 
@@ -20,6 +21,16 @@ export default function PlayClient({game, players, cards, chosenCardID}){
     const [guessCardId, setGuessCardId] = useState<string | null>(null);
     const [guessResult, setGuessResult] = useState<"win" | "lose" | null>(null);
     const [showOverlay, setShowOverlay] = useState(true);
+    const announcementVariants = {
+        open: {
+            y: 0,
+            transition: { duration: 0.4, ease: "easeInOut" }
+        },
+        closed: {
+            y: -120,
+            transition: { duration: 0.2, ease: "easeInOut" }
+        }
+    }
 
 
     useEffect(() => {
@@ -174,6 +185,14 @@ export default function PlayClient({game, players, cards, chosenCardID}){
         setGuessCardId(null);
     }
 
+    function handleGuessModeCardClick(cardClickedID: string) {
+        if (!guessCardId) {
+            setGuessCardId(cardClickedID)
+        } else {
+            setGuessCardId(null)
+        }
+    }
+
     return(
         <div className="flex flex-col items-center justify-center w-full h-full gap-5">
             {guessResult === "win" && <p>You win!</p>}
@@ -186,6 +205,18 @@ export default function PlayClient({game, players, cards, chosenCardID}){
                     onComplete={() => setShowOverlay(true)}
                 />
             )}
+
+            <motion.div
+                className="guess-mode-announcement"
+                initial="closed"
+                animate={guessing ? "open" : "closed"}
+                variants={announcementVariants}
+            >
+                    <h2 className="shadow-title">Final Guess</h2>
+                    <p className="subtitle">Pick one card as your final guess. If you’re right, you win.
+                        If you’re wrong, your opponent wins.</p>
+                </motion.div>
+
             <img className="game-logo" src="/images/logo.webp" alt="Who Did I Choose?" />
 
             {/*    My Board    */}
@@ -198,54 +229,54 @@ export default function PlayClient({game, players, cards, chosenCardID}){
 
                             return (
                                 <div key={c.id} className="relative">
-                                    {guessing ? (
-                                        <div
-                                            className={`guess-card-container ${guessCardId === c.id ? "expanded" : ""}`}
-                                        >
-                                            <button onClick={() => setGuessCardId(c.id)}>
+                                    <div
+                                        className={`guess-card-container ${isGuessed ? "expanded" : ""}`}
+                                    >
+                                        {/*
+                                        onClick: switch between guess card and normal flipping
+                                        shaking: jiggle effect for unselected cards
+                                         */}
+                                        <FlippingCard
+                                            frontImage={getPublicUrl(c.image)}
+                                            alt={c.name}
+                                            flipped={myFlipped[c.id]}
+                                            onClick={() =>
+                                                guessing
+                                                    ? setGuessCardId(c.id)
+                                                    : toggleFlip(c.id)
+                                            }
+                                            shaking={guessing && !isGuessed}
+                                            className={isGuessed ? "expanded" : ""}
+                                        />
+
+                                        {isGuessed && guessing && (
+                                            <div className="guess-card-overlay">
                                                 <img
-                                                    className="emboss"
                                                     src={
                                                         myFlipped[c.id]
                                                             ? "/images/back_temp.webp"
                                                             : getPublicUrl(c.image)
                                                     }
                                                     alt={c.name}
+                                                    onClick={() => handleGuessModeCardClick(c.id)}
+                                                    className="cursor-pointer"
                                                 />
-                                            </button>
+                                                <Button
+                                                    className="simple-button"
+                                                    onClick={handleGuessConfirm}
+                                                >
+                                                    GUESS
+                                                </Button>
+                                            </div>
+                                        )}
 
-                                            {guessCardId === c.id && (
-                                                <div className="guess-card-overlay">
-                                                    <img
-                                                        src={
-                                                            myFlipped[c.id]
-                                                                ? "/images/back_temp.webp"
-                                                                : getPublicUrl(c.image)
-                                                        }
-                                                        alt={c.name}
-                                                    />
-                                                    <Button
-                                                        className="simple-button"
-                                                        onClick={() => handleGuessConfirm()}
-                                                    >
-                                                        GUESS
-                                                    </Button>
-                                                </div>
+                                    </div>
 
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <FlippingCard
-                                            frontImage={getPublicUrl(c.image)}
-                                            alt={c.name}
-                                            onClick={() => toggleFlip(c.id)}
-                                            flipped={myFlipped[c.id]}
-                                        />
-                                    )}
                                 </div>
                             );
                         })}
                     </div>
+
 
 
                     { !isMyTurn ? (
@@ -288,56 +319,6 @@ export default function PlayClient({game, players, cards, chosenCardID}){
                             </div>
                         ))}
                     </div>
-                    {/*<img className="play-chosen-card" src={getPublicUrl(cards.find((c) => c.id === chosenCardID)?.image)}/>*/}
-                    {/*<Button*/}
-                    {/*    className="play-guess-button shadow-text w-full"*/}
-
-                    {/*    disabled={!isMyTurn || guessing}*/}
-                    {/*    onClick={() => setGuessing(true)}*/}
-                    {/*>*/}
-                    {/*    <div className="guess-button">*/}
-                    {/*        <div className="guess-button-user">*/}
-                    {/*            <svg*/}
-                    {/*                className="guess-user-svg"*/}
-                    {/*                viewBox="0 0 122 158"*/}
-                    {/*                fill="none"*/}
-                    {/*                xmlns="http://www.w3.org/2000/svg"*/}
-                    {/*            >*/}
-                    {/*                <path*/}
-                    {/*                    fillRule="evenodd"*/}
-                    {/*                    clipRule="evenodd"*/}
-                    {/*                    d="M61.1529 66.8942C79.501 66.8942 94.375 52.0201 94.375 33.6719C94.375 15.3238 79.501 0.449707 61.1529 0.449707C42.8048 0.449707 27.9307 15.3238 27.9307 33.6719C27.9307 52.0201 42.8048 66.8942 61.1529 66.8942Z"*/}
-                    {/*                    fill="#5F6E73"*/}
-                    {/*                />*/}
-                    {/*                <path*/}
-                    {/*                    fillRule="evenodd"*/}
-                    {/*                    clipRule="evenodd"*/}
-                    {/*                    d="M121.937 157.333C118.594 106.473 92.655 66.8942 61.1529 66.8942C29.6505 66.8942 3.71224 106.473 0.369141 157.333H121.937Z"*/}
-                    {/*                    fill="#5F6E73"*/}
-                    {/*                />*/}
-                    {/*            </svg>*/}
-                    {/*        </div>*/}
-
-
-                    {/*        <h2 className="p-1">Guess</h2>*/}
-
-
-                    {/*    </div>*/}
-                    {/*</Button>*/}
-
-
-
-                {/*<div className="right">*/}
-                {/*    <div className="endturn-srn-lg-container">*/}
-                {/*        <Button disabled={!isMyTurn}*/}
-                {/*                onClick={endTurn}*/}
-                {/*                className="blue-button shadow-text"*/}
-                {/*        >END TURN</Button>*/}
-                {/*    </div>*/}
-
-                {/*    <img src="/images/logo.webp" className="endturn-logo"/>*/}
-                {/*</div>*/}
-
 
             </div>
         </div>

@@ -322,6 +322,30 @@ button {
     border-radius: 0.8em;
 }
 
+.guess-mode-announcement {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(129, 33, 35, 0.9);
+    backdrop-filter: blur(5px);
+    width: 100%;
+    top: 0;
+    padding: 1em;
+    text-align: center;
+    align-content: center;
+    z-index: 10;
+    height:7.5em;
+    border-bottom: #812123 1px solid;
+}
+
+.subtitle {
+    color: white;
+    font-weight: 400;
+    max-width: 500px;
+}
+
 
 .no-point {
     cursor: default;
@@ -738,5 +762,19 @@ button {
         display: grid;
         grid-template-columns: repeat(6, minmax(0, 1fr));
         }
+
+    .guess-mode-announcement {
+        align-items: start;
+        height: 5.6em;
+        text-align: left;
+    }
+    .guess-mode-announcement .shadow-title {
+        font-size: 1.5em;
+    }
+
+    .guess-mode-announcement .subtitle {
+        font-size: 0.9em;
+        line-height: 1.2em;
+    }
 
 }

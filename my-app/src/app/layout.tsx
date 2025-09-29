@@ -6,7 +6,7 @@ import "./style.css"
 const grandstander = Grandstander({
     variable: "--font-grandstander",
     // Medium, Bold, Black
-    weight: ["500", "700", "900"],
+    weight: ["400", "500", "700", "900"],
     subsets: ["latin"],
 });
 
