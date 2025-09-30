@@ -153,8 +153,8 @@ export default function Home() {
               <img src="/images/logo.webp" className="logo-home mx-auto" alt="Who Did I Choose?"/>
               <Tabs defaultValue={tab1}>
                   <TabsList className="grid w-full h-full p-2 grid-cols-2 tab-list">
-                      <TabsTrigger className="tab-item shadow-text" value={tab1}>{tab1}</TabsTrigger>
-                      <TabsTrigger className="tab-item shadow-text" value={tab2}>{tab2}</TabsTrigger>
+                      <TabsTrigger className="tab-item shadow-text normal" value={tab1}>{tab1}</TabsTrigger>
+                      <TabsTrigger className="tab-item shadow-text normal" value={tab2}>{tab2}</TabsTrigger>
                   </TabsList>
                   <TabsContent value={tab1}>
                       <Card className="card">
@@ -170,7 +170,7 @@ export default function Home() {
 
                                   </div>
                                       <Button
-                                      onClick={createGame} className="button blue shadow-text"
+                                      onClick={createGame} className="button blue shadow-text normal"
                                   >Go</Button>
                               </div>
                           </CardContent>

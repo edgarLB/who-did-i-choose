@@ -24,7 +24,7 @@ export default function TransitionOverlay({
                 transition={{ delay: 1, duration: 0.5, ease: "easeInOut" }}
                 onAnimationComplete={onComplete}
             >
-                <span className="shadow-title">{playerName}</span>
+                <span className="shadow-text larger">{playerName}</span>
             </motion.div>
 
             {/* Red Bottom Half */}
@@ -34,11 +34,11 @@ export default function TransitionOverlay({
                 animate={{ y: "100%" }}
                 transition={{ delay: 1, duration: 0.5, ease: "easeInOut" }}
             >
-                <span className="shadow-title">{opponentName}</span>
+                <span className="shadow-text largere">{opponentName}</span>
             </motion.div>
 
             {/* VS Icon */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 shadow-title">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 shadow-text larger">
                 {/*VS*/}
             </div>
         </div>

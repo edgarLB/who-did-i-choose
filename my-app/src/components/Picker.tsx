@@ -46,7 +46,7 @@ export default function Picker({
         <div className="picker-container card-br">
             <div className="flex items-center justify-between">
                 <div className=" flex flex-row gap-5">
-                    <h3 className="shadow-text">Choose a {title}</h3>
+                    <h3 className="shadow-text normal">Choose a {title}</h3>
                     {/*<IconButton icon={Shuffle} variant="silver"/>*/}
                 </div>
             </div>
