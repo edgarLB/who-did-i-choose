@@ -8,9 +8,11 @@ import {Button} from "@/components/ui/button";
 import FlippingCard from "@/components/FlippingCard";
 import TransitionOverlay from "@/components/TransitionOverlay";
 import { motion } from "framer-motion";
+import {useRouter} from "next/navigation";
 
 export default function PlayClient({game, players, cards, chosenCardID}){
 
+    const router = useRouter();
     const localPlayerId = getLocalPlayerId();
     const opponentId = players.find((p) => p.id !== localPlayerId)?.id;
     const [currentTurnId, setCurrentTurnId] = useState(game.current_player_id);
@@ -19,11 +21,12 @@ export default function PlayClient({game, players, cards, chosenCardID}){
     const [enemyFlipped, setEnemyFlipped] = useState<Record<string, boolean>>({});
     const [guessing, setGuessing] = useState(false);
     const [guessCardId, setGuessCardId] = useState<string | null>(null);
-    const [guessResult, setGuessResult] = useState<"win" | "lose" | null>(null);
+    const [guessResult, setGuessResult] = useState<boolean | null>(null);
     const [showOverlay, setShowOverlay] = useState(true);
     const [countdown, setCountdown] = useState(3);
-    const [phase, setPhase] = useState<"play" | "results">("results");
+    const [phase, setPhase] = useState<"play" | "results">("play");
     const [showAnswer, setShowAnswer] = useState(false);
+    const [correctCardId, setCorrectCardId] = useState<string | null>(null);
     const announcementVariants = {
         open: {
             y: 0,
@@ -53,8 +56,6 @@ export default function PlayClient({game, players, cards, chosenCardID}){
         loadFlippedCards()
 
 
-
-
         // Realtime games channel
         const gameChannel = supabase
             .channel(`game-${game.id}`)
@@ -70,6 +71,33 @@ export default function PlayClient({game, players, cards, chosenCardID}){
                     // When turn changes in DB, update the local state
                     const newTurnId = payload.new.current_player_id;
                     setCurrentTurnId(newTurnId);
+
+                    setGuessing(payload.new.guessing);
+
+
+                    // check if game is over
+                    if (payload.new.status === "finished") {
+                        setPhase("results");
+                        setGuessCardId(payload.new.guess_card_id);
+                        setGuessResult(payload.new.last_result);
+
+
+
+                        let timer = 3;
+                        setCountdown(timer);
+
+                        const interval = setInterval(() => {
+                            timer--;
+                            if (timer <= 0) {
+                                clearInterval(interval);
+                                setShowAnswer(true);
+                            }
+                            setCountdown(timer);
+                        }, 1000)
+
+                    } else if (payload.new.status === "in_progress") {
+                        setPhase("play");
+                    }
                 }
             )
             .subscribe();
@@ -146,38 +174,91 @@ export default function PlayClient({game, players, cards, chosenCardID}){
 
         // invokes edge function
         // returns true if correct, false if wrong
-        // const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/check-guess`, {
-        //     method: "POST",
-        //     headers: { "Content-Type": "application/json" },
-        //     body: JSON.stringify({ guessCardId, opponentId }),
-        // });
-        //
-        // if (!res.ok) {
-        //     console.error(await res.text());
-        // } else {
-        //     const { result } = await res.json();
-        //     // True: Win, False: Lose
-        //     setGuessResult(result ? "win" : "lose");
-        // }
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/check-guess`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ guessCardId, opponentId, gameId: game.id }),
+        });
+
+        if (!res.ok) {
+            console.error(await res.text());
+        } else {
+            const { result, chosenCardId } = await res.json();
+            // True: Win, False: Lose
+            setGuessResult(result);
+            setCorrectCardId(chosenCardId);
+        }
+
+        const { error} =await supabase
+            .from("games")
+            .update({status: "finished"})
+            .eq("id", game.id)
+            .single();
+
+        // Only update local state if DB updated successfully
+        if( !error) {
+            toggleGuessMode(false);
+            setPhase("results");
+        }
+        else {
+            console.log("Could not update game status:", error);
+        }
 
         setShowAnswer(false);
         setGuessing(false);
-        setPhase("results");
 
-        let timer = 3;
-        setCountdown(timer);
+    }
 
-        const interval = setInterval(() => {
-            timer--;
-            if (timer <= -1) {
-                clearInterval(interval);
-                setShowAnswer(true);
-            }
-            setCountdown(timer);
-        }, 1000)
+    async function toggleGuessMode(on: boolean) {
+
+        const { error} =await supabase
+            .from("games")
+            .update({guessing: on})
+            .eq("id", game.id)
+            .single();
+
+        // Only update local state if DB updated successfully
+        if( !error) {
+            setGuessing(on)
+        }
+        else {
+            console.log("Could not update guess mode:", error);
+        }
+    }
+
+    async function handlePlayAgain() {
+
+        const { error} =await supabase
+            .from("players")
+            .update({play_again: true})
+            .eq("id", localPlayerId)
+            .single();
+
+        // Only update local state if DB updated successfully
+        if( !error) {
+            console.log("Play Again");
+        }
+        else {
+            console.log("Could not update guess mode:", error);
+        }
+    }
+
+    async function handleLeave() {
+        const { error} =await supabase
+            .from("players")
+            .delete()
+            .eq("id", localPlayerId)
+            .single();
 
 
-
+        // Only update local state if DB updated successfully
+        if( !error) {
+            console.log("Did not want to play again");
+            router.push("/")
+        }
+        else {
+            console.log("Could not update guess mode:", error);
+        }
     }
 
     async function endTurn() {
@@ -201,7 +282,7 @@ export default function PlayClient({game, players, cards, chosenCardID}){
     }
 
     function handleNVM() {
-        setGuessing(false);
+        toggleGuessMode(false);
         setGuessCardId(null);
     }
 
@@ -311,15 +392,15 @@ export default function PlayClient({game, players, cards, chosenCardID}){
                                     <Button
                                         className="button red shadow-text normal"
                                         disabled={!isMyTurn || guessing}
-                                        onClick={() => setGuessing(true)}
+                                        onClick={() => toggleGuessMode(true)}
                                     > Guess</Button>
                                     <Button disabled={!isMyTurn}
                                             onClick={endTurn}
                                             className="button blue shadow-text normal"
                                     >END TURN</Button>
-                                    <Button onClick={() => setPhase("results")}>
-                                        Results
-                                    </Button>
+                                    {/*<Button onClick={() => setPhase("results")}>*/}
+                                    {/*    Results*/}
+                                    {/*</Button>*/}
                                 </div>
                             )}
                         </div>
@@ -352,45 +433,83 @@ export default function PlayClient({game, players, cards, chosenCardID}){
 
             {phase === "results" && (
                 <div className="gameover-container">
-                    {countdown > 0 && (
-                        <h1 className="shadow-text largest countdown">{countdown}</h1>
-                    )}
                     <img className="gameover-logo" src="/images/logo.webp" alt="Who Did I Choose?" />
-                    {guessResult === "win" && <p>You win!</p>}
-                    {guessResult === "lose" && <p>Loser 🤣🫵</p>}
-                    <div className="choices-container">
-                        <div className="card-br">
-                            <p className="shadow-text normal">You Guessed</p>
-                            <img className="gameover-card emboss" src={getPublicUrl(cards.find((c) => c.id === guessCardId)?.image)}/>
 
+                    {!showAnswer ? (
+                        <>
+                            <h1 className="shadow-text largest countdown">{countdown}</h1>
+                            <p className="shadow-text large">The winner is...</p>
+                        </>
+                    ) : (
+                        <>
+                            {guessResult ? (
+                                isMyTurn ? (
+                                    <p className="shadow-text large">You Win!</p>
+                                ) : (
+                                    <p className="shadow-text large">You Lose 🤣🫵</p>
+                                )
+                            ) : (
+                                isMyTurn ? (
+                                    <p className="shadow-text large">Not you, Loser 🤣🫵</p>
+                                ) : (
+                                    <p className="shadow-text large">You Win!</p>
+                                )
+                            )}
+                        </>
+                    )}
+
+
+
+                    {isMyTurn ? (
+                        <div className="choices-container">
+                            <div className="card-br">
+                                <p className="shadow-text normal">You Guessed</p>
+                                <img className="gameover-card emboss" src={getPublicUrl(cards.find((c) => c.id === guessCardId)?.image)}/>
+
+                            </div>
+                            <div className="card-br">
+                                <p className="shadow-text normal">Answer</p>
+                                <FlippingCard
+                                    frontImage="/images/back_temp.webp"
+                                    backImage={getPublicUrl(cards.find((c) => c.id === correctCardId)?.image)}
+                                    alt="Game Over Card"
+                                    flipped={showAnswer}
+                                    className=""
+                                />
+                            </div>
                         </div>
-                        <div className="card-br">
-                            <p className="shadow-text normal">Answer</p>
-                            <FlippingCard
-                                frontImage="/images/back_temp.webp"
-                                backImage={getPublicUrl(cards.find((c) => c.id === guessCardId)?.image)}
-                                alt="Game Over Card"
-                                flipped={showAnswer}
-                                className=""
-                            />
+                    ) : (
+                        <div className="choices-container">
+                            <div className="card-br">
+                                <p className="shadow-text normal">Your Card</p>
+                                <img className="gameover-card emboss" src={getPublicUrl(cards.find((c) => c.id === chosenCardID)?.image)}/>
 
-
-
+                            </div>
+                            <div className="card-br">
+                                <p className="shadow-text normal">They Guessed</p>
+                                <FlippingCard
+                                    frontImage="/images/back_temp.webp"
+                                    backImage={getPublicUrl(cards.find((c) => c.id === guessCardId)?.image)}
+                                    alt="Game Over Card"
+                                    flipped={showAnswer}
+                                    className=""
+                                />
+                            </div>
                         </div>
-                    </div>
+                    )}
 
-                    <Button disabled={!isMyTurn}
-                            onClick={endTurn}
+
+                    <Button
+                            onClick={handlePlayAgain}
                             className="button blue shadow-text larger"
                     >Play Again</Button>
                     <Button
                         className="button red shadow-text normal"
-                        disabled={!isMyTurn || guessing}
-                        onClick={() => setGuessing(true)}
+                        onClick={handleLeave}
                     > Leave</Button>
-                    <Button onClick={() => setPhase("play")}>
-                        Game
-                    </Button>
+                    {/*<Button onClick={() => setPhase("play")}>*/}
+                    {/*    Game*/}
+                    {/*</Button>*/}
 
                 </div>
             )}

@@ -383,6 +383,7 @@ button {
     display: flex;
     gap: 1em;
     z-index: 0;
+    pointer-events: none;
 }
 
 .choices-container .card-br {
@@ -840,7 +841,7 @@ button {
     }
 
     .shadow-text.normal{
-        font-size: 1.1em;
+        /*font-size: 1.1em;*/
     }
 
 }
