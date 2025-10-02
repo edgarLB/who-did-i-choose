@@ -371,6 +371,10 @@ button {
     max-width: 500px;
 }
 
+.subtitle.black{
+    color: black;
+}
+
 .gameover-container {
     display: flex;
     flex-direction: column;
@@ -557,6 +561,13 @@ button {
 
 }
 
+.drawer-card{
+    border-radius: clamp(0.4em, 1.2vw, 1em);
+}
+
+.dialog-card{
+    border-radius: 0.5em
+}
 
 .separate {
     margin-top: 0.5em;

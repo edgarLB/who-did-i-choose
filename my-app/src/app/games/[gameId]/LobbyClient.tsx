@@ -14,6 +14,7 @@ import Picker, { PickerItem } from "@/components/Picker";
 import IconButton from "@/components/IconButton";
 import UserIcon from "@/components/UserIcon";
 import PlayerRow from "@/components/PlayerRow";
+import DeckPreviewDrawer from "@/components/DeckPreview";
 
 export default function LobbyClient({gameId, inviteCode, decks, deckId : intialDeckId, cards : intialCards} : {
     gameId: string;
@@ -33,6 +34,10 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
     const localPlayerId = getLocalPlayerId();
     const playerCount = players.length;
     const router = useRouter();
+    const [previewDeck, setPreviewDeck] = useState<Deck | null>(null);
+    const [previewCards, setPreviewCards] = useState<Card[]>([]);
+    const [drawerOpen, setDrawerOpen] = useState(false);
+
 
     // Fetch players & subscribe to realtime changes
     useEffect(() => {
@@ -266,6 +271,27 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
         return [inviteCode.slice(0,3), inviteCode.slice(3)].join('-');
     }
 
+    const openDeckPreview = async (id: string) => {
+        const deck = decks.find((d) => d.id === id);
+        if (!deck) return;
+
+        setPreviewDeck(deck);
+
+        const { data: cards, error } = await supabase
+            .from("cards")
+            .select("id, name, image")
+            .eq("deck_id", id)
+            .order("name");
+
+        if (error) {
+            console.error("Error loading preview cards:", error);
+        } else {
+            setPreviewCards(cards ?? []);
+            setDrawerOpen(true);
+        }
+    };
+
+
     return (
         <div className="lobby-container">
             <div className="lobby-side-bar">
@@ -325,7 +351,7 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                     <Picker
                         items={deckItems}
                         selectedId={deckId}
-                        onSelect={chooseDeck}
+                        onSelect={(id) => openDeckPreview(id)}
                         type={1}
                     />
                 </div>
@@ -341,7 +367,22 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                 </div>
 
             </div>
+            <DeckPreviewDrawer
+                open={drawerOpen}
+                onOpenChange={setDrawerOpen}
+                deckName={previewDeck?.name}
+                cards={previewCards}
+                onSelect={() => {
+                    if (previewDeck) {
+                        chooseDeck(previewDeck.id);
+                        setDrawerOpen(false);
+                    }
+                }}
+            />
+
+
 
         </div>
+
     );
 }
