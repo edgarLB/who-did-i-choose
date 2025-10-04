@@ -57,7 +57,6 @@ export default function Picker({
                             key={it.id}
                             onClick={() => {
                                 onSelect(it.id)
-                                setSelectedIMG(it.image)
                             }}
                             className={cn(
                                 "deck-button bold-text-sma",

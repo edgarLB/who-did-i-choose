@@ -35,9 +35,8 @@ export default async function LobbyPage({ params }: { params: { gameId: string }
     // Query to get decks
     const { data:decks } = await supabase
         .from('decks')
-        .select('id, name, cover_image, scope')
-
-    // console.log(`Decks ${decks?.length}`)
+        .select('id, name, scope, game_id')
+        .or(`scope.eq.premade,and(scope.eq.custom,game_id.eq.${game.id})`);
 
     // Query to get the cards for the currently selected deck
     const { data: cards } = await supabase

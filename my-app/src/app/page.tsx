@@ -85,6 +85,22 @@ export default function Home() {
           return;
         }
 
+        // Initialize Empty Deck
+        const { error: deckError } = await supabase
+            .from('decks')
+            .insert({
+                name: "Custom",
+                game_id: gameData.id,
+                scope: "custom"
+            })
+            .select()
+            .single();
+
+        if (deckError) {
+            console.error('Error initializing deck:', deckError);
+            return;
+        }
+
         // Store player ID for game permissions
         localStorage.setItem('playerId', playerData.id);
         document.cookie = `playerId=${playerData.id}; path=/; max-age=86400;`

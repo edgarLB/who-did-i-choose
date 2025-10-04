@@ -21,51 +21,51 @@ import {
     DialogHeader,
     DialogTitle
 } from "@/components/ui/dialog";
+import {useEffect, useState} from "react";
+import DeckBuilder from "@/components/DeckBuilder";
 
 interface DeckPreviewDrawerProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    deckName?: string;
+    deckName: string;
+    deckId: string;
+    gameId: string;
     cards: Card[];
+    customDId: string;
     onSelect: () => void;
+    custom: boolean;
 }
 
-export default function DeckPreviewDrawer({
+export default function DeckPreview({
                                               open,
                                               onOpenChange,
                                               deckName,
+    deckId,
+    gameId,
                                               cards,
+
                                               onSelect,
+    custom = false,
                                           }: DeckPreviewDrawerProps) {
 
     const isDesktop = useMediaQuery("(min-width: 768px)");
+    const title = custom ? "Deck Builder" : `${deckName} Deck`;
+    const description = custom ? "Add images, then tap a card to label it. You can label as many or as few as you like."
+        : "Preview the cards in this deck. Selecting a new deck will update it for everyone."
+    const [canSelect, setCanSelect] = useState<boolean>(false);
 
     if (isDesktop) {
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
                 <DialogContent className="sm:max-w-[668px]">
                     <DialogHeader>
-                        <DialogTitle>{deckName ? `${deckName} Deck` : "Deck Preview"}</DialogTitle>
-                        <DialogDescription>
-                            Preview the cards in this deck. Selecting a new deck will update it for everyone.
-                        </DialogDescription>
+                        <DialogTitle>{title}</DialogTitle>
+                        <DialogDescription>{description}</DialogDescription>
                     </DialogHeader>
-                    <div className="enemy-board">
-                        {cards.map((card) => (
-                            <div key={card.id}>
-                                {card.image && (
-                                    <img
-                                        src={getPublicUrl(card.image)}
-                                        alt={card.name}
-                                        className="dialog-card"
-                                    />
-                                )}
-
-                            </div>
-                        ))}
-                    </div>
-                    <DialogFooter>
+                    <DeckContent/>
+                    <DialogFooter className="items-center">
                         <Button
+                            disabled={canSelect}
                             onClick={onSelect}
                             className="button blue shadow-text normal"
                         >
@@ -80,30 +80,15 @@ export default function DeckPreviewDrawer({
     }
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
-            <DrawerContent className="drawer">
+            <DrawerContent className="">
 
-                <div>
                     <DrawerHeader>
-                        <DrawerTitle>{deckName ?? "Deck Preview"}</DrawerTitle>
-                        <DrawerDescription>
-                            Preview the cards in this deck. Selecting a new deck will update it for everyone.
-                        </DrawerDescription>
+                        <DrawerTitle>{title}</DrawerTitle>
+                        <DrawerDescription>{description}</DrawerDescription>
                     </DrawerHeader>
 
-                    <div className="px-4 enemy-board">
-                        {cards.map((card) => (
-                            <div key={card.id}>
-                                {card.image && (
-                                    <img
-                                        src={getPublicUrl(card.image)}
-                                        alt={card.name}
-                                        className="drawer-card"
-                                    />
-                                )}
+                <DeckContent/>
 
-                            </div>
-                        ))}
-                    </div>
 
                     <DrawerFooter>
                         <Button
@@ -113,9 +98,36 @@ export default function DeckPreviewDrawer({
                             Select Deck
                         </Button>
                     </DrawerFooter>
-                </div>
 
             </DrawerContent>
         </Drawer>
     );
+
+    function DeckContent() {
+        if (custom) {
+            return(
+                <>
+                    <DeckBuilder deckId={deckId} gameId={gameId} />
+                    <p className="font-bold text-center pt-1">You need to create <span className="shadow-text">{24 - cards.length}</span> more cards</p>
+                </>
+
+
+            )
+        }
+        return (
+            <div className="px-4 enemy-board">
+                {cards.map((card) => (
+                    <div key={card.id}>
+                        {card.image && (
+                            <img
+                                src={getPublicUrl(card.image)}
+                                alt={card.name}
+                                className="drawer-card"
+                            />
+                        )}
+                    </div>
+                ))}
+            </div>
+        );
+    }
 }

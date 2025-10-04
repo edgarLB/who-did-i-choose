@@ -14,7 +14,7 @@ import Picker, { PickerItem } from "@/components/Picker";
 import IconButton from "@/components/IconButton";
 import UserIcon from "@/components/UserIcon";
 import PlayerRow from "@/components/PlayerRow";
-import DeckPreviewDrawer from "@/components/DeckPreview";
+import DeckPreview from "@/components/DeckPreview";
 
 export default function LobbyClient({gameId, inviteCode, decks, deckId : intialDeckId, cards : intialCards} : {
     gameId: string;
@@ -137,9 +137,8 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
         };
     }, [gameId]);
 
-    const deckItems: { image: string | null; id: string; label: string }[] = decks.map((d) => ({
+    const deckItems: { id: string; label: string }[] = decks.map((d) => ({
         id: d.id,
-        image: getPublicUrl(d.cover_image),
         label: d.name,
     }));
 
@@ -367,18 +366,19 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                 </div>
 
             </div>
-            <DeckPreviewDrawer
+            <DeckPreview
                 open={drawerOpen}
                 onOpenChange={setDrawerOpen}
                 deckName={previewDeck?.name}
+                deckId={previewDeck?.id}
+                gameId={gameId}
                 cards={previewCards}
                 onSelect={() => {
                     if (previewDeck) {
                         chooseDeck(previewDeck.id);
                         setDrawerOpen(false);
                     }
-                }}
-            />
+                }} custom={previewDeck?.scope === 'custom'}            />
 
 
 
