@@ -571,32 +571,92 @@ button {
 }
 
 
-.deck-builder-container {
-    /*display: flex;*/
-    /*flex-direction: column;*/
-    /*gap: 1em;*/
-    /*width: 100%;*/
-    /*height: 100%;*/
-}
-
 .deck-builder-grid {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
-    gap: 0.4em;
+    gap: 4px;
+    cursor: pointer;
 }
 
+.deck-builder.guess-card-container img {
+    border-radius: 0;
+    /*border: 2px solid white;*/
+}
+
+
+.empty-slot {
+    border-radius: 0.5em;
+    background: #D9AF8A;
+}
+.card-content-flex {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #D9AF8A;
+    border-radius: 0.5em;
+    overflow: hidden;
+    padding: 0;
+    border: 2px solid white;
+    background: white;
+}
+
+.image-wrapper {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 0 0 0.5em 0.5em;
+}
+
+.uploaded-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-content-flex p {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    width: 100%;
+    background: white;
+    color: black;
+    font-weight: bold;
+    font-size: 10px;
+    transform: translateY(2px);
+}
+
+
+
+.deck-builder.guess-card-overlay {
+    padding: 4px;
+    gap: 4px;
+    background-color: rgba(32, 171, 230, 0.4);
+    border: 1px solid #A3FCFF;
+    box-shadow: 0 0 4px #A3FCFF;
+}
+
+.deck-builder.simple-button {
+    font-size: 1em;
+}
 
 .card-placeholder {
     position: relative;
-
-    padding-bottom: 133.333%; /* (4 / 3) * 100% = 133.333% */
+    cursor: pointer;
+    padding-bottom: 133.333%;
     overflow: hidden;
-    background-color: #D9AF8A;
     border-radius: 0.5em;
+
 }
 
-.card-placeholder-content {
 
+.card-placeholder-content {
+    background-color: #D9AF8A;
     position: absolute;
     top: 0;
     left: 0;
@@ -606,10 +666,46 @@ button {
     justify-content: center;
     align-items: center;
     font-size: 1.5em;
-    /*font-weight: bold;*/
+    overflow: hidden;
     color: #F3CAA7;
+
 }
 
+.uploaded-card.false{
+    border: 2px solid #D9AF8A;
+}
+
+.uploaded-content{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background-color: white;
+    overflow: hidden;
+    /*flex: 0;*/
+
+}
+
+.uploaded-content img{
+    object-fit: cover;
+    border-radius: 0 0 8px 8px;
+}
+
+.card-content-flex Input{
+    /*position: absolute;*/
+    background-color: white;
+    border: none;
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    padding: 0;
+    margin: 0;
+    height: auto;
+    text-align: center;
+    border-radius: 0;
+    transform: translateY(2px);
+
+}
 
 .deck-builder-upload {
     display: flex;
@@ -655,14 +751,21 @@ button {
     cursor: pointer;
 }
 
+
+
 .delete-btn{
     position: absolute;
     z-index: 1;
-    right: -4px;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
     background: red;
     color: white;
     border-radius: 50%;
     padding: 0.2em;
+    text-align: center;
+
 }
 .separate {
     margin-top: 0.5em;

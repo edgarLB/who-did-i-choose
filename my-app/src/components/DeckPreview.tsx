@@ -108,7 +108,7 @@ export default function DeckPreview({
             return(
                 <>
                     <DeckBuilder deckId={deckId} gameId={gameId} />
-                    <p className="font-bold text-center pt-1">You need to create <span className="shadow-text">{24 - cards.length}</span> more cards</p>
+
                 </>
 
 
