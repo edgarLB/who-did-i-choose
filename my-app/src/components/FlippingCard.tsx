@@ -1,10 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 
 interface FlippingCardProps {
-    frontImage: string;
+    frontContent: ReactNode;
     backImage?: string;
     alt: string;
     flipped: boolean;
@@ -15,7 +15,7 @@ interface FlippingCardProps {
 }
 
 export default function FlippingCard({
-                                         frontImage,
+                                         frontContent,
                                          backImage = '/images/back_temp.webp',
                                          alt,
                                          flipped,
@@ -49,15 +49,15 @@ export default function FlippingCard({
             }}
                 style={{ transformStyle: 'preserve-3d' }}
             >
-                <div className="card-face front emboss">
-                    <img src={frontImage} alt={alt} />
+                <div className={"card-face front"}>
+                    {frontContent}
                 </div>
 
                 {enemy ? (
-                    <div className="card-face back enemey-back"/>
+                    <div className="card-face back enemey-back empty-slot darker"/>
                 ) : (
                     <div className="card-face back">
-                        <img src={backImage} alt="Flipped Card"/>
+                        <img  src={backImage} alt="Flipped Card"/>
                     </div>
                 )
 

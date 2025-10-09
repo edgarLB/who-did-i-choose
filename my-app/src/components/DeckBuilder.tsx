@@ -7,6 +7,7 @@ import {useEffect, useRef, useState} from "react";
 import { Card } from "@/types";
 import FlippingCard from "@/components/FlippingCard";
 import {getPublicUrl} from "@/lib/getPublicUrl";
+import CardDisplay from "@/components/CardDisplay";
 
 interface DeckBuilderProps {
     gameId: string;
@@ -142,7 +143,7 @@ export default function DeckBuilder({ gameId, deckId }: DeckBuilderProps) {
         if (cardId) {
             const newCardId = cardId === cardClicked ? null : cardId;
             setCardClicked(newCardId);
-            setEditedName(cardName)
+            setEditedName(cardName? cardName : "");
         } else {
             handleFileClick();
         }
@@ -163,24 +164,20 @@ export default function DeckBuilder({ gameId, deckId }: DeckBuilderProps) {
                                 <div
                                     className={`deck-builder guess-card-container ${isClicked ? "expanded" : ""}`}
                                 >
-                                    <div className="card-content-flex">
-                                        <div className="image-wrapper">
-                                            <img
-                                                className="uploaded-img"
-                                                src={supabase.storage.from("decks").getPublicUrl(card.image).data.publicUrl}
-                                                alt="Card"
-                                                onClick={() => handleCardClick(card.id, card.name)}
-                                            />
-                                        </div>
-                                        <p>{card.name}</p>
-                                    </div>
+
+                                    <CardDisplay
+                                        frontImage={supabase.storage.from("decks").getPublicUrl(card.image).data.publicUrl}
+                                        name={card.name}
+                                        custom={true}
+                                        onClick={() => handleCardClick(card.id, card.name)}
+                                    />
 
 
 
                                     {isClicked && (
                                         <div className="deck-builder guess-card-overlay">
 
-                                            <div className="card-content-flex">
+                                            <div className="card-content-flex custom">
                                                 <div className="image-wrapper">
                                                     <img
                                                         className="uploaded-img"
@@ -193,12 +190,19 @@ export default function DeckBuilder({ gameId, deckId }: DeckBuilderProps) {
                                                     autoFocus={true}
                                                     value={editedName}
                                                     onChange={(e) => setEditedName(e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === "Enter") {
+                                                            e.preventDefault();
+                                                            handleSave(card.id);
+                                                        }
+                                                    }}
                                                 />
                                             </div>
 
                                             <Button
                                                 className="deck-builder simple-button"
                                                 onClick={() => handleSave(card.id)}
+
                                             >
                                                 SAVE
                                             </Button>

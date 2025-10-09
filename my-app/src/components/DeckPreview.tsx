@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import {useEffect, useState} from "react";
 import DeckBuilder from "@/components/DeckBuilder";
+import CardDisplay from "@/components/CardDisplay";
 
 interface DeckPreviewDrawerProps {
     open: boolean;
@@ -118,13 +119,14 @@ export default function DeckPreview({
             <div className="px-4 enemy-board">
                 {cards.map((card) => (
                     <div key={card.id}>
-                        {card.image && (
-                            <img
-                                src={getPublicUrl(card.image)}
-                                alt={card.name}
-                                className="drawer-card"
-                            />
-                        )}
+                        <CardDisplay frontImage={getPublicUrl(card.image)} editable={false}/>
+                        {/*{card.image && (*/}
+                        {/*    <img*/}
+                        {/*        src={getPublicUrl(card.image)}*/}
+                        {/*        alt={card.name}*/}
+                        {/*        className="drawer-card"*/}
+                        {/*    />*/}
+                        {/*)}*/}
                     </div>
                 ))}
             </div>

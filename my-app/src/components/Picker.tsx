@@ -1,10 +1,11 @@
 "use client"
 import {useEffect, useRef, useState} from "react";
-import { ChevronLeft, ChevronRight, Shuffle } from 'lucide-react';
+import {Check, ChevronLeft, ChevronRight, CircleCheckBig, Shuffle} from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import IconButton from "@/components/IconButton";
-import {it} from "node:test";
+import CardDisplay from "@/components/CardDisplay";
+
 
 
 export interface PickerItem {
@@ -19,6 +20,7 @@ interface PickerProps {
     onSelect: (id: string) => void;
     type: 1 | 2;
     className?: string;
+    custom?: boolean;
 }
 
 export default function Picker({
@@ -26,78 +28,84 @@ export default function Picker({
                                    selectedId,
                                    onSelect,
                                    type = 1,
-                                   className,
+                                   custom = false,
                                } : PickerProps) {
-    const scrollRef = useRef<HTMLDivElement | null>(null);
 
-    const [ selectedIMG, setSelectedIMG ] = useState<string | null>();
     let title = type === 1 ? "Deck" : "Card";
-
+    const placeholders = Array.from({ length: 24 }, (_, i) => i + 1);
     useEffect(() => {
         if (!selectedId) return;
         const selectedItem = items.find(item => item.id === selectedId)
-        if (selectedItem) {
-            setSelectedIMG(selectedItem.image);
-        }
+
     }, [items, selectedId]);
 
 
     return (
         <div className="picker-container card-br">
             <div className="flex items-center justify-between">
-                <div className=" flex flex-row gap-5">
+                <div className="flex flex-row gap-5">
                     <h3 className="shadow-text normal">Choose a {title}</h3>
-                    {/*<IconButton icon={Shuffle} variant="silver"/>*/}
                 </div>
             </div>
-            {type === 1 ?
+
+            {type === 1 ? (
                 <div className="deck-container">
                     {items.map((it) => (
                         <Button
                             key={it.id}
-                            onClick={() => {
-                                onSelect(it.id)
-                            }}
+                            onClick={() => onSelect(it.id)}
                             className={cn(
                                 "deck-button bold-text-sma",
-                                selectedId === it.id ? "ring ring-white" : "",
+                                selectedId === it.id && "ring ring-white"
                             )}
                         >
                             {it.label}
                         </Button>
-                        ))}
-                </div>
-                : <div
-                    ref={scrollRef}
-                    className={cn(
-                        "grid snap-x snap-mandatory overflow-x-auto scroll-smooth gap-2",
-                        "grid-flow-col auto-cols-[minmax(100px,210px)]",
-                        type === 2 ? "grid-rows-3" : "grid-rows-1",
-                        "flex-grow overflow-visible"
-                    )}
-                >
-                    {items.map((it) => (
-                        <button
-                            key={it.id}
-                            onClick={() => {
-                                onSelect(it.id)
-                                setSelectedIMG(it.image)
-                            }}
-                            className={cn(
-                                "aspect-[3/4] h-full w-auto", "ring-offset-2 transition-[scale] hover:scale-105 rounded-xl overflow-hidden",
-                                selectedId === it.id ? "ring ring-blue-500" : "",
-                            )}
-                        >
-                            <img
-                                src={it.image}
-                                alt={it.label ?? ""}
-                            />
-
-                        </button>
                     ))}
                 </div>
-            }
+            ) : (
+                <div className="gameboard">
+                    {items.length > 0
+                        ? items.map((it) => {
+                            const isSelected = selectedId === it.id;
+                            return (
+                                <div key={it.id} className="relative cursor-pointer">
+                                    <div
+                                        className={`guess-card-container ${isSelected ? "expanded" : ""}`}
+                                    >
+                                        <CardDisplay
+                                            frontImage={it.image}
+                                            name={it.label}
+                                            custom={custom}
+                                            onClick={() => onSelect(it.id)}
+                                        />
+                                        {isSelected && (
+                                            <div className="deck-builder guess-card-overlay overflow-hidden">
+                                                <div className="selected-check"
+                                                     onClick={() => onSelect(it.id)}>
+                                                    <Check className="stroke-3"/>
+                                                </div>
 
+                                                <CardDisplay
+                                                    frontImage={it.image}
+                                                    name={it.label}
+                                                    custom={custom}
+                                                    onClick={() => onSelect(it.id)}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })
+                        : placeholders.map((it) => (
+                            <div
+                                key={it}
+                                className="empty-slot loading card-placeholder"
+                            />
+                        ))}
+                </div>
+            )}
         </div>
     );
 }

@@ -37,7 +37,8 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
     const [previewDeck, setPreviewDeck] = useState<Deck | null>(null);
     const [previewCards, setPreviewCards] = useState<Card[]>([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
-
+    const isCustomDeck = decks.find((d) => d.id === deckId)?.scope === 'custom'
+    const [isLoadingCards, setIsLoadingCards] = useState(false);
 
     // Fetch players & subscribe to realtime changes
     useEffect(() => {
@@ -179,6 +180,8 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
         // new card needs to be picked in new deck
         setPickedCardId(null);
 
+        setIsLoadingCards(true);
+
         // update game in db so all players get a realtime update
         const { error } = await supabase
             .from("games")
@@ -188,6 +191,18 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
             .eq("id", gameId);
 
         if (error) console.error("Error updating deck:", error);
+
+
+        const { data: newCards, error: cardError } = await supabase
+            .from("cards")
+            .select("id, name, image")
+            .eq("deck_id", id)
+            .order("name");
+
+        if (cardError) console.error("Error fetching new cards:", cardError);
+
+        setCards(newCards ?? []);
+        setIsLoadingCards(false);
 
         // clear any chosen card for all players in game when deck changed
         await supabase
@@ -201,8 +216,11 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
 
 
     const chooseCard = async (id: string) => {
-        // card already chosen
-        if (id == pickedCardId) return;
+        // toggle card
+        if (id == pickedCardId) {
+            setPickedCardId(null)
+            return;
+        }
 
         // locally update chosen card
         setPickedCardId(id);
@@ -358,9 +376,10 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                 <div className="lobby-main-item">
                     {/* Display Cards */}
                     <Picker
-                        items={cardItems}
+                        items={isLoadingCards ? [] : cardItems}
                         selectedId={pickedCardId}
                         onSelect={chooseCard}
+                        custom={isCustomDeck}
                         type={2}
                     />
                 </div>

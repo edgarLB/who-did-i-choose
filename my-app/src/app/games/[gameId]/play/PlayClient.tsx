@@ -9,6 +9,7 @@ import FlippingCard from "@/components/FlippingCard";
 import TransitionOverlay from "@/components/TransitionOverlay";
 import { motion } from "framer-motion";
 import {useRouter} from "next/navigation";
+import CardDisplay from "@/components/CardDisplay";
 
 export default function PlayClient({game, players, cards, chosenCardID}){
 
@@ -339,7 +340,12 @@ export default function PlayClient({game, players, cards, chosenCardID}){
                                         shaking: jiggle effect for unselected cards
                                          */}
                                                 <FlippingCard
-                                                    frontImage={getPublicUrl(c.image)}
+                                                    frontContent={
+                                                        <CardDisplay
+                                                            frontImage={getPublicUrl(c.image)}
+                                                            name={c.name}
+                                                            custom={true}
+                                                        />}
                                                     alt={c.name}
                                                     flipped={myFlipped[c.id]}
                                                     onClick={() =>
@@ -353,15 +359,11 @@ export default function PlayClient({game, players, cards, chosenCardID}){
 
                                                 {isGuessed && guessing && (
                                                     <div className="guess-card-overlay">
-                                                        <img
-                                                            src={
-                                                                myFlipped[c.id]
-                                                                    ? "/images/back_temp.webp"
-                                                                    : getPublicUrl(c.image)
-                                                            }
-                                                            alt={c.name}
-                                                            onClick={() => handleGuessModeCardClick(c.id)}
-                                                            className="cursor-pointer"
+                                                        <CardDisplay
+                                                            frontImage={getPublicUrl(c.image)}
+                                                            name={c.name}
+                                                            custom={true}
+                                                            onClick={()=>handleGuessModeCardClick(c.id)}
                                                         />
                                                         <Button
                                                             className="simple-button"
@@ -409,17 +411,28 @@ export default function PlayClient({game, players, cards, chosenCardID}){
                     </div>
 
                     <div className="game-area">
-                        <img className="play-chosen-card emboss" src={getPublicUrl(cards.find((c) => c.id === chosenCardID)?.image)}/>
+                        <div className="play-chosen-card emboss">
+                            <CardDisplay
+                                frontImage={getPublicUrl(cards.find((c) => c.id === chosenCardID)?.image)}
+                                name={cards.find((c) => c.id === chosenCardID)?.name}
+                                custom={true}
+                            />
+                        </div>
+
+                        {/*<img className="play-chosen-card emboss" src={getPublicUrl(cards.find((c) => c.id === chosenCardID)?.image)}/>*/}
                         {/*    Enemy's Board    */}
                         <div className="enemy-board">
                             {cards.map(c => (
                                 <div key={c.id}>
                                     <FlippingCard
-                                        frontImage={"/images/back_temp.webp"} // This will be hidden on flip
+                                        frontContent={
+                                            <CardDisplay
+                                                frontImage="/images/back_temp.webp"
+                                                custom={true}
+                                            />}
                                         flipped={enemyFlipped[c.id]}
                                         enemy={true}
                                         alt={c.name}
-                                        className="no-point"
                                     />
                                 </div>
                             ))}
@@ -465,7 +478,7 @@ export default function PlayClient({game, players, cards, chosenCardID}){
                             <div className="card-br">
                                 <p className="shadow-text normal">You Guessed</p>
                                 <img className="gameover-card emboss" src={getPublicUrl(cards.find((c) => c.id === guessCardId)?.image)}/>
-
+                                    
                             </div>
                             <div className="card-br">
                                 <p className="shadow-text normal">Answer</p>
@@ -488,7 +501,10 @@ export default function PlayClient({game, players, cards, chosenCardID}){
                             <div className="card-br">
                                 <p className="shadow-text normal">They Guessed</p>
                                 <FlippingCard
-                                    frontImage="/images/back_temp.webp"
+                                    frontContent={
+                                        <CardDisplay
+                                            frontImage="/images/back_temp.webp"
+                                        />}
                                     backImage={getPublicUrl(cards.find((c) => c.id === guessCardId)?.image)}
                                     alt="Game Over Card"
                                     flipped={showAnswer}
