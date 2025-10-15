@@ -2,7 +2,7 @@
 
 body {
     background-color: #D9AF8A;
-    background-image: url("/images/wood_pattern_bg.webp");
+    background-image: url("/images/wood_pattern_bg22.webp");
     background-repeat: repeat;
     font-family: 'Grandstander', sans-serif;
 }
@@ -49,9 +49,15 @@ button {
 
 .white-box-container {
     background-color: white;
+    width: 100%;
     padding: 0.8em;
     border-radius: 22px;
     box-shadow: 0 4px 0 #A4A4A4 ;
+}
+
+.white-box-container.player {
+    padding: 0 0 0 1em;
+    border-radius: 1em;
 }
 
 
@@ -69,7 +75,8 @@ button {
 
 .bold-text-sma {
     font-weight: bold;
-    font-size: 24px;
+    font-size: 1.5em;
+    line-height: 1em;
 }
 
 .blue-text {
@@ -110,7 +117,7 @@ button {
 }
 
 .button span {
-    transform: translateY(0);
+    transform: translateY(2px);
     /*transition: transform ease-in 0.1s,;*/
 }
 
@@ -139,6 +146,18 @@ button {
     inset 0 2px 0 #2D527C,
     0 0 0 #2D527C,
     -1px -1px 3.5px rgba(0,0,0,0.1);
+}
+
+.button.blue:disabled {
+    background: #D9AF8A;
+    box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 4px 0 #9E7B67;
+}
+
+.button.blue:disabled span{
+    -webkit-text-stroke: 4px #9E7B67;
+    text-shadow: 0 2px 0 #9E7B67;
+    paint-order: stroke fill;
 }
 
 .button.red {
@@ -377,6 +396,14 @@ button {
 .subtitle.black{
     color: black;
 }
+
+.subtitle.disabled{
+    color: #9E7B67;
+    font-weight: 500;
+    line-height: 1;
+    font-size: 0.8em;
+}
+
 
 .gameover-container {
     display: flex;
@@ -838,6 +865,29 @@ button {
     color: white;
 }
 
+/* Simple  Variant*/
+.icon-button.simple {
+    border-radius: 0 1em 1em 0;
+    background: linear-gradient(#C9EAFA, #9AB7D3);
+    box-shadow: inset -0.5px -0.5px 0 #DAEEE9,
+    inset 0 0 0 #2D527C,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
+}
+
+.icon-button.simple:hover {
+    background: linear-gradient(#89F7FE, #66A6FF);
+
+}
+
+
+.icon-button.simple:active {
+    background: linear-gradient(#9AB7D3, #9AB7D3);
+    box-shadow: inset -0.5px -0.5px 0 #DAEEE9,
+    inset 0 2px 0 #537296,
+    -1px -1px 3.5px rgba(0,0,0,0.1);
+    border: none;
+}
+
 /* Blue Variant */
 .icon-button.blue {
     background: linear-gradient(#89F7FE, #66A6FF);
@@ -862,6 +912,7 @@ button {
     0 0 0 #2D527C,
     -1px -1px 3.5px rgba(0,0,0,0.1);
 }
+
 
 /* Silver Variant */
 .icon-button.silver {
@@ -927,13 +978,48 @@ button {
 .user-circle{
     background: #D9AF8A;
     border-radius: 50%;
-    width: 32px;
-    height: 32px;
+    width: 45px;
+    height: 45px;
+    overflow: hidden;
+    flex-shrink: 0;
 }
 
 .user-circle svg {
-    transform: translateY(-3px);
+    bottom: 0;
 }
+
+.player-row-content {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+    align-items: center;
+/*color: #66A6FF;*/
+}
+
+.ready{
+    background-color: rgba(106, 238, 255, 0.4);
+    color: #0475a1;
+    opacity: 0.8;
+}
+
+.not-ready{
+    background-color: rgba(239, 135, 135, 0.4);
+    color: #d1272a;
+    opacity: 0.8;
+}
+
+.waiting-text::after {
+    content: "";
+    animation: dots 3s steps(4, end) infinite;
+}
+
+@keyframes dots {
+    0%{ content: ""; }
+    00% { content: "."; }
+    40% { content: ".."; }
+    70%, 100% { content: "..."; }
+}
+
 
 
 
@@ -970,9 +1056,8 @@ button {
         justify-self: start;
     }
 
-    .lobby-side-bar .white-box-container {
+    .lobby-side-bar .white-box-container code {
         grid-column: 2;
-        width: 100%;
         max-width: 22em;
     }
 
@@ -1028,7 +1113,7 @@ button {
     }
 
     .card-br {
-        padding: 1em 0.5em;
+        padding: 16px;
     }
 
     .gameboard{

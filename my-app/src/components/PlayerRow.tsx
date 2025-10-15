@@ -2,6 +2,7 @@ import { Check, Pencil } from "lucide-react";
 import UserIcon from "@/components/UserIcon";
 import { Input } from "@/components/ui/input";
 import IconButton from "@/components/IconButton";
+import { Badge } from "./ui/badge";
 
 type PlayerRowProps = {
     player?: { id: string; screen_name: string };
@@ -11,24 +12,34 @@ type PlayerRowProps = {
     setTmpName?: (val: string) => void;
     setIsEditing?: (val: boolean) => void;
     saveScreenName?: () => void;
+    ready: boolean;
 };
 
 export default function PlayerRow({
                                       player,
                                       isLocal = false,
                                       isEditing = false,
+                                      ready = false,
                                       tmpName = "",
                                       setTmpName,
                                       setIsEditing,
                                       saveScreenName,
                                   }: PlayerRowProps) {
+
+    let colorMap = {
+        "p1" : "#66A6FF",
+        "p2" : "#d93312",
+        "p0" : "#9E7B67"
+    };
+
+
     // Empty slot
     if (!player) {
         return (
-            <li className="flex items-center gap-2 border-t-1 border-[#9E7B67] pt-[1em]">
-                <div className="flex flex-row gap-1">
-                    <UserIcon fillColor="#9E7B67" size={32} />
-                    <span className="bold-text-sma">Waiting for the other player…</span>
+            <li className="flex flex-row w-full items-start gap-2">
+                <div className="player-row-content">
+                    <UserIcon fillColor={colorMap["p0"]} size={45} />
+                    <p className="bold-text-sma waiting-text w-full">Waiting for the other player</p>
                 </div>
             </li>
         );
@@ -39,23 +50,34 @@ export default function PlayerRow({
         if (isEditing) {
             return (
                 <li className="flex items-center gap-2">
-                    <div className="white-box-container flex flex-row gap-2 items-center">
+                    <div className="white-box-container player flex flex-row gap-2 items-center overflow-hidden">
                         <Input
                             value={tmpName}
                             onChange={(e) => setTmpName?.(e.target.value)}
                             className="white-text-box bold-text-sma"
+                            maxLength={8}
                         />
-                        <IconButton icon={Check} variant="blue" onClick={saveScreenName} />
+                        <IconButton icon={Check} variant="simple" onClick={saveScreenName} />
+
+
                     </div>
+
                 </li>
             );
         }
         return (
             <li className="flex items-center gap-2">
-                <div className="flex flex-row w-full justify-between gap-2 items-center pb-[1em]">
-                    <div className="flex flex-row gap-1 items-center">
-                        <UserIcon fillColor="#125dd9" size={32} />
-                        <span className="bold-text-sma">{player.screen_name}</span>
+                <div className="flex flex-row w-full justify-between gap-2 items-center">
+                    <div className="player-row-content">
+                        <UserIcon fillColor={colorMap["p1"]} size={45} />
+                        <div className="flex-col">
+                            <p className="bold-text-sma">{player.screen_name}</p>
+
+                            {ready ? <Badge variant="outline" className="ready">Ready</Badge>
+                                : <Badge variant="outline"  className="not-ready">Card Not Chosen</Badge>}
+
+
+                        </div>
                     </div>
                     <IconButton
                         icon={Pencil}
@@ -73,9 +95,16 @@ export default function PlayerRow({
     // Other players
     return (
         <li className="flex items-center gap-2">
-            <div className="flex flex-row gap-1 items-center">
-                <UserIcon fillColor="#d93312" size={32} />
-                <span className="bold-text-sma">{player.screen_name}</span>
+            <div className="player-row-content">
+                <UserIcon fillColor={colorMap["p2"]} size={45} />
+                <div className="flex-col">
+                    <p className="bold-text-sma">{player.screen_name}</p>
+
+                    {ready ? <Badge variant="outline" className="ready">Ready</Badge>
+                        : <Badge variant="outline"  className="not-ready">Card Not Chosen</Badge>}
+
+
+                </div>
             </div>
         </li>
     );

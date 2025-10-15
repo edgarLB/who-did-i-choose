@@ -27,7 +27,9 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
     const [deckId, setDeckId] = useState(intialDeckId);
     const [cards, setCards] = useState(intialCards);
     const [pickedCardId, setPickedCardId] = useState<string | null>(null);
-    const [players, setPlayers] = useState<{ id: string; screen_name: string }[]>([]);
+    const [players, setPlayers] = useState<{
+        chosen_card_id: boolean;
+        id: string; screen_name: string }[]>([]);
     const [copiedCode, setCopiedCode] = useState<boolean>(false);
     const [isEditing, setIsEditing] = useState(false);
     const [tmpName, setTmpName] = useState("");
@@ -39,6 +41,24 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
     const [drawerOpen, setDrawerOpen] = useState(false);
     const isCustomDeck = decks.find((d) => d.id === deckId)?.scope === 'custom'
     const [isLoadingCards, setIsLoadingCards] = useState(false);
+    const unreadyPlayers = players.filter(p => !p.chosen_card_id);
+
+    let startDisabled = false;
+    let statusMessage = "";
+
+    if (playerCount < 2) {
+        startDisabled = true;
+        statusMessage = "2 players required";
+    } else if (unreadyPlayers.length === players.length) {
+        startDisabled = true;
+        statusMessage = "Everyone needs to choose a card";
+    } else if (unreadyPlayers.length > 0) {
+        startDisabled = true;
+        statusMessage = `Waiting for ${unreadyPlayers[0].screen_name} to choose a card`;
+    } else {
+        statusMessage = "All players are ready!";
+    }
+
 
     // Fetch players & subscribe to realtime changes
     useEffect(() => {
@@ -55,7 +75,12 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
             if (playersError) {
                 console.error("Error fetching players:", playersError);
             } else {
-                const playersList = initialPlayers ?? [];
+                const playersList = (initialPlayers ?? []).sort((a, b) =>
+                {
+                    if (a.id === localPlayerId) return -1;
+                    if (b.id === localPlayerId) return 1;
+                    return 0;
+                });
                 setPlayers(playersList);
 
                 const me = playersList.find(p=>p.id === localPlayerId);
@@ -219,7 +244,18 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
         // toggle card
         if (id == pickedCardId) {
             setPickedCardId(null)
+
+
+            const { error } = await supabase
+                .from("players")
+                .update({
+                    chosen_card_id: null,
+                })
+                .eq("id", localPlayerId);
+
+            if (error) console.error("Error picking card:", error);
             return;
+
         }
 
         // locally update chosen card
@@ -241,7 +277,7 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
             cards!.map(card => (
                 {
                     player_id: player.id,
-                    card_id: card.id
+                    card_id: card.id,
                 })
             )
         );
@@ -315,7 +351,7 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
 
                 <div className="space-y-5 w-full">
                     <img src="/images/logo.webp" className="lobby-logo" alt="Who Did I Choose?"/>
-                    <div className="white-box-container flex flex-row justify-between gap-2 items-center">
+                    <div className="white-box-container code flex flex-row justify-between gap-2 items-center">
                         <div>
                             <Label className="blue-text">Invite Code</Label>
                             <Label className="chunky-text">{prettyInviteCode(inviteCode)}</Label>
@@ -332,10 +368,12 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                     <div className="players-card card-br" >
                         <h3 className="shadow-text normal pb-2">Players</h3>
 
-                        <ul className="space-y-1">
-                            {players.map((player) => (
+                        <ul>
+                            {players.map((player, index) => (
+                                <>
                                 <PlayerRow
                                     key={player.id}
+                                    ready={Boolean(player.chosen_card_id)}
                                     player={player}
                                     isLocal={player.id === localPlayerId}
                                     isEditing={isEditing}
@@ -344,6 +382,10 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                                     setIsEditing={setIsEditing}
                                     saveScreenName={saveScreenName}
                                 />
+                                {index === 0 && (
+                                    <hr className="border-[#9E7B67] my-5" />
+                                )}
+                                </>
                             ))}
 
                             {/* If less than 2 players, render placeholder slot */}
@@ -352,14 +394,17 @@ export default function LobbyClient({gameId, inviteCode, decks, deckId : intialD
                     </div>
 
 
+<div className="card-br space-y-2 w-full text-center">
+    <Button
+        disabled={startDisabled}
+        onClick={() => startGame()}
+        className="button blue shadow-text larger w-full"
+    >
+        <span>START GAME</span>
+    </Button>
+    <span className="subtitle disabled">{statusMessage}</span>
+</div>
 
-                <Button
-                    disabled={playerCount < 2}
-                    onClick={() => startGame()}
-                    className="button blue shadow-text larger"
-                >
-                    <span>Start Game</span>
-                </Button>
             </div>
 
             <div className="lobby-main">
