@@ -19,6 +19,12 @@ export default async function PlayPage({ params }: { params: { gameId: string } 
     if (!game) {
         notFound();
     }
+    const { data: deck } = await supabase
+        .from('decks')
+        .select('scope')
+        .eq('id', game.deck_id)
+        .maybeSingle();
+
 
     // get cards
     const { data: cards } = await supabase
@@ -49,6 +55,7 @@ export default async function PlayPage({ params }: { params: { gameId: string } 
         players = {players ?? []}
         cards = {cards ?? []}
         chosenCardID={localPlayer?.chosen_card_id ?? null}
+        custom = {deck?.scope !== "premade"}
     />
     </div>
 

@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 import {useRouter} from "next/navigation";
 import CardDisplay from "@/components/CardDisplay";
 
-export default function PlayClient({game, players, cards, chosenCardID}){
+export default function PlayClient({game, players, cards, chosenCardID, custom}){
 
     const router = useRouter();
     const localPlayerId = getLocalPlayerId();
@@ -344,7 +344,7 @@ export default function PlayClient({game, players, cards, chosenCardID}){
                                                         <CardDisplay
                                                             frontImage={getPublicUrl(c.image)}
                                                             name={c.name}
-                                                            custom={true}
+                                                            custom={custom}
                                                         />}
                                                     alt={c.name}
                                                     flipped={myFlipped[c.id]}
@@ -362,7 +362,7 @@ export default function PlayClient({game, players, cards, chosenCardID}){
                                                         <CardDisplay
                                                             frontImage={getPublicUrl(c.image)}
                                                             name={c.name}
-                                                            custom={true}
+                                                            custom={custom}
                                                             onClick={()=>handleGuessModeCardClick(c.id)}
                                                         />
                                                         <Button
@@ -415,7 +415,7 @@ export default function PlayClient({game, players, cards, chosenCardID}){
                             <CardDisplay
                                 frontImage={getPublicUrl(cards.find((c) => c.id === chosenCardID)?.image)}
                                 name={cards.find((c) => c.id === chosenCardID)?.name}
-                                custom={true}
+                                custom={custom}
                             />
                         </div>
 
@@ -477,16 +477,23 @@ export default function PlayClient({game, players, cards, chosenCardID}){
                         <div className="choices-container">
                             <div className="card-br">
                                 <p className="shadow-text normal">You Guessed</p>
-                                <img className="gameover-card emboss" src={getPublicUrl(cards.find((c) => c.id === guessCardId)?.image)}/>
+                                <CardDisplay
+                                    frontImage={getPublicUrl(cards.find((c) => c.id === guessCardId)?.image)}
+                                    custom={custom}/>
+                                {/*<img className="gameover-card emboss" src={getPublicUrl(cards.find((c) => c.id === guessCardId)?.image)}/>*/}
                                     
                             </div>
                             <div className="card-br">
                                 <p className="shadow-text normal">Answer</p>
                                 <FlippingCard
-                                    frontImage="/images/back_temp.webp"
-                                    backImage={getPublicUrl(cards.find((c) => c.id === correctCardId)?.image)}
+                                    frontContent={
+                                        <CardDisplay
+                                            frontImage={getPublicUrl(cards.find((c) => c.id === correctCardId)?.image)}
+                                            custom={custom}
+                                        />}
+                                    backImage="/images/back_temp.webp"
                                     alt="Game Over Card"
-                                    flipped={showAnswer}
+                                    flipped={!showAnswer}
                                     className=""
                                 />
                             </div>
@@ -495,7 +502,10 @@ export default function PlayClient({game, players, cards, chosenCardID}){
                         <div className="choices-container">
                             <div className="card-br">
                                 <p className="shadow-text normal">Your Card</p>
-                                <img className="gameover-card emboss" src={getPublicUrl(cards.find((c) => c.id === chosenCardID)?.image)}/>
+                                <CardDisplay
+                                    frontImage={getPublicUrl(cards.find((c) => c.id === chosenCardID)?.image)}
+                                    custom={custom}/>
+                                {/*<img className="gameover-card emboss" src={getPublicUrl(cards.find((c) => c.id === chosenCardID)?.image)}/>*/}
 
                             </div>
                             <div className="card-br">
@@ -503,11 +513,12 @@ export default function PlayClient({game, players, cards, chosenCardID}){
                                 <FlippingCard
                                     frontContent={
                                         <CardDisplay
-                                            frontImage="/images/back_temp.webp"
+                                            frontImage={getPublicUrl(cards.find((c) => c.id === guessCardId)?.image)}
+                                            custom={custom}
                                         />}
-                                    backImage={getPublicUrl(cards.find((c) => c.id === guessCardId)?.image)}
+                                    backImage="/images/back_temp.webp"
                                     alt="Game Over Card"
-                                    flipped={showAnswer}
+                                    flipped={!showAnswer}
                                     className=""
                                 />
                             </div>

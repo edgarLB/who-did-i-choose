@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ReactNode, useMemo } from 'react';
+import {ReactNode, useEffect, useMemo, useState} from 'react';
 
 interface FlippingCardProps {
     frontContent: ReactNode;
@@ -25,6 +25,12 @@ export default function FlippingCard({
                                          shaking = false,
                                      }: FlippingCardProps) {
     const randomDelay = useMemo(() => Math.random() * 0.5, []);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        // so there isn't a flip animation when first rendered
+        setMounted(true);
+    }, []);
 
     return (
         <button
@@ -40,7 +46,7 @@ export default function FlippingCard({
 
                 }}
                 transition={{
-                    duration: shaking ? 0.2 : 0.3,
+                    duration: shaking ? 0.2 : mounted ? 0.3 : 0,
                     repeat: shaking ? Infinity : 0,
                     repeatType: 'mirror',
                     ease: 'easeOut',
